@@ -1,0 +1,122 @@
+﻿@page "/"
+
+@inject ISectorService SectorService
+@inject HttpClient Http
+
+<PageTitle>Sectors</PageTitle>
+
+<h1>Sectors</h1>
+
+<label name="call_for_action">Please enter your name and pick the Sectors you are currently involved in.</label>
+
+<EditForm Model="CurrentUser" OnInvalidSubmit="HandleSubmit">
+    <DataAnnotationsValidator />
+<table>
+    <tbody>
+        <tr>
+        <td>
+            <div>
+                <label>Name</label>
+                <InputText name="name" @bind-Value="CurrentUser.Name"></InputText>
+                <ValidationMessage For=@(() => CurrentUser.Name) />
+                <br>
+            </div>
+        </td>
+        <td>
+            <button class="btn btn-danger" @onclick="@(e => SearchUser(CurrentUser.Name))">Search user</button>
+        </td>
+        </tr>
+     </tbody>
+  </table>
+
+  <br>
+    <p>CurrentUser empty: @CurrentUser.Id.Equals(0)</p>
+    <br>
+    @if (SectorList.Count.Equals(0))
+    {
+        <p>Loanding...</p>
+    }
+    else
+    {
+        @if (CurrentUser.Id.Equals(0))
+        {
+            <CreateUserTitle></CreateUserTitle>
+        }
+        else
+        {
+            <EditUserTitle></EditUserTitle>
+        }
+
+        <label >Sectors:</label>
+        <InputSelect name="sectors" id="sectors" @bind-Value="SelectedSectors" size="15">
+            @foreach (var sector in SectorList)
+            {
+                <option value="@sector.SectorId">@sector.Name</option>
+            }
+        </InputSelect>
+        <ValidationMessage For=@(() => SelectedSectors) />
+        <br>
+        <br>
+        <InputCheckbox name="agreement" @bind-Value=CurrentUser.Agreed></InputCheckbox>
+        <ValidationMessage For=@(() => CurrentUser.Agreed) />
+        <label for="agreement">Agree to terms</label>
+        <br>
+        <br>
+        <input name="submit" type="submit" value="Save">
+    }
+</EditForm>
+
+@code {
+
+    public List<SectorModel> SectorList { get; set; } = new();
+    public UserModel CurrentUser { get; set; } = new();
+    public List<SectorModel> sectorListSet = null;
+    public UserModel currentUserSet = null;
+
+    public int[] SelectedSectors { get; set; }
+
+    private void SelectedSectorsChanged(ChangeEventArgs e)
+    {
+        SelectedSectors = (int[])e.Value;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        SectorList = await SectorService.GetSectors();
+    }
+
+    protected async override Task OnParametersSetAsync()
+    {
+        sectorListSet = SectorList;
+        currentUserSet = CurrentUser;
+
+    }
+
+    async void HandleSubmit()
+    {
+        if (CurrentUser.Id.Equals(0))
+        {
+            await SectorService.CreateUser(CurrentUser);
+        }
+        else
+        {
+            await SectorService.UpdateUser(CurrentUser);
+        }
+    }
+
+    async Task SearchUser(string nameInput)
+    {
+        CurrentUser = new();
+        var ResponseUser = await SectorService.GetOneUser(nameInput);
+        if(!ResponseUser.Id.Equals(0))
+        {
+            CurrentUser = ResponseUser;
+            var UserSectors = await SectorService.GetRelatedSectorIdByUserId(CurrentUser.Id);
+            if (!UserSectors.Count.Equals(0))
+            {
+                SelectedSectors = UserSectors.Select(s => s.SectorId).ToArray();
+            }
+        }
+    }
+
+}
