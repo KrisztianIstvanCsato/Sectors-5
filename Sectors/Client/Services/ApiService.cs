@@ -3,10 +3,10 @@ using System.Net.Http.Json;
 
 namespace Sectors.Client.Services
 {
-    public class SectorService : ISectorService
+    public class ApiService : IApiService
     {
         private readonly HttpClient _httpClient;
-        public SectorService(HttpClient httpClient)
+        public ApiService(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
@@ -17,27 +17,17 @@ namespace Sectors.Client.Services
 
         public event Action OnChange;
 
-        public async Task<List<UserModel>> GetUsersData()
-        {
-            return await _httpClient.GetFromJsonAsync<List<UserModel>>("api/sector/users");
-        }
-
         public async Task<List<SectorModel>> GetSectors()
         {
             return await _httpClient.GetFromJsonAsync<List<SectorModel>>("api/sector/sectors");
         }
 
-        public async Task<List<SectorModel>> GetSectorsBySectorId(int sectorId)
-        {
-            return await _httpClient.GetFromJsonAsync<List<SectorModel>>($"api/sector/sectors/{sectorId}");
-        }
-
-        public async Task<List<User_Sector_Model>> GetRelatedSectorIdByUserId(int userId)
+        public async Task<List<User_Sector_Model>> GetSectorIdListByUserId(int userId)
         {
             return await _httpClient.GetFromJsonAsync<List<User_Sector_Model>>($"api/sector/user_sector_relations/{userId}");
         }
 
-        public async Task<UserModel?> GetOneUser(string name)
+        public async Task<UserModel?> GetUserByName(string name)
         {
             var responseUser = await _httpClient.GetFromJsonAsync<UserModel>($"api/sector/{name}");
 
@@ -49,6 +39,7 @@ namespace Sectors.Client.Services
 
         public async Task<List<UserModel>> CreateUser(UserModel user)
         {
+            Console.WriteLine("Creating user");
             var result = await _httpClient.PostAsJsonAsync("api/sector", user);
             UserList = await result.Content.ReadFromJsonAsync<List<UserModel>>();
             OnChange.Invoke();

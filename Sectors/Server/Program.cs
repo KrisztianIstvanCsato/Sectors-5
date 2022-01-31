@@ -2,16 +2,17 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Sectors.Server.Data;
 using Sectors.Server.Services;
+using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddDbContext<DataContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<DataContext>();
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
-builder.Services.AddScoped<IDatabaseService, DatabaseService>();    //This is meant for extracting db actions
+builder.Services.AddScoped<IRepositoryService, RepositoryService>();
+builder.Services.AddAutoMapper(typeof(StartupBase));
 
 var app = builder.Build();
 

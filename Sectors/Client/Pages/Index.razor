@@ -1,7 +1,9 @@
 ﻿@page "/"
+@using System.ComponentModel.DataAnnotations
 
-@inject ISectorService SectorService
+@inject IApiService SectorService
 @inject HttpClient Http
+@inject IJSRuntime JSRuntime
 
 <PageTitle>Sectors</PageTitle>
 
@@ -23,21 +25,28 @@
             </div>
         </td>
         <td>
-            <button class="btn btn-danger" @onclick="@(e => SearchUser(CurrentUser.Name))">Search user</button>
+            <button type="button" class="btn btn-danger" @onclick="@(e => SearchUser(CurrentUser.Name))">Search user</button>
         </td>
         </tr>
      </tbody>
   </table>
 
   <br>
-    <p>CurrentUser empty: @CurrentUser.Id.Equals(0)</p>
-    <br>
-    @if (SectorList.Count.Equals(0))
+
+    @if (SectorList == null)
     {
-        <p>Loanding...</p>
+        @if (Loading == false)
+       {
+           
+       }
+        else
+        {
+            <p><em>Loading...</em></p>
+        }
     }
     else
     {
+        
         @if (CurrentUser.Id.Equals(0))
         {
             <CreateUserTitle></CreateUserTitle>
@@ -46,50 +55,70 @@
         {
             <EditUserTitle></EditUserTitle>
         }
+        <br>
+        <SelectList Items="SectorList" @bind-SelectedItems="SelectedSectors" Context="sector">
+            <ItemTemplate>
+                @sector.Name
+            </ItemTemplate>
+        </SelectList>
 
-        <label >Sectors:</label>
-        <InputSelect name="sectors" id="sectors" @bind-Value="SelectedSectors" size="15">
-            @foreach (var sector in SectorList)
-            {
-                <option value="@sector.SectorId">@sector.Name</option>
-            }
-        </InputSelect>
-        <ValidationMessage For=@(() => SelectedSectors) />
-        <br>
-        <br>
-        <InputCheckbox name="agreement" @bind-Value=CurrentUser.Agreed></InputCheckbox>
-        <ValidationMessage For=@(() => CurrentUser.Agreed) />
-        <label for="agreement">Agree to terms</label>
-        <br>
-        <br>
-        <input name="submit" type="submit" value="Save">
+    <hr />
+
+    <ul>
+        @foreach (var item in SelectedSectors)
+        {
+            <li>@item.Id : @item.Name</li>
+        }
+    </ul>
+    <br>
+    <p>CurrentUser empty: @CurrentUser.Id.Equals(0)</p>
+    <br>
+    <br>
+    <InputCheckbox name="agreement" @bind-Value=CurrentUser.Agreed></InputCheckbox>
+    <ValidationMessage For=@(() => CurrentUser.Agreed) />
+    <label for="agreement">Agree to terms</label>
+    <br>
+    <br>
+    <button @onclick="HandleSubmit" name="submit" type="submit">Submit</button>
     }
 </EditForm>
 
 @code {
-
-    public List<SectorModel> SectorList { get; set; } = new();
+    public List<SectorModel> SelectedSectors { get; set; } = new();
+    private List<SectorModel> SectorList;
     public UserModel CurrentUser { get; set; } = new();
-    public List<SectorModel> sectorListSet = null;
-    public UserModel currentUserSet = null;
+    public EventCallback<List<SectorModel>> SelectedSectorsChanged { get; set; }
+    bool Loading = false;
 
-    public int[] SelectedSectors { get; set; }
-
-    private void SelectedSectorsChanged(ChangeEventArgs e)
+    async Task SearchUser(string nameInput)
     {
-        SelectedSectors = (int[])e.Value;
-    }
+        if (nameInput.Length > 0)
+        {
+            Loading = true;
+            SectorList = null;
+            SelectedSectors = new();
+            List<SectorModel> sectors = await SectorService.GetSectors();
 
-    protected override async Task OnInitializedAsync()
-    {
-        SectorList = await SectorService.GetSectors();
-    }
-
-    protected async override Task OnParametersSetAsync()
-    {
-        sectorListSet = SectorList;
-        currentUserSet = CurrentUser;
-
+            CurrentUser = new();
+            CurrentUser = await SectorService.GetUserByName(nameInput);
+            if(CurrentUser != null)
+            {
+                CurrentUser.Name = nameInput;
+                List<User_Sector_Model> UserSectors = new();
+                UserSectors = await SectorService.GetSectorIdListByUserId(CurrentUser.Id);
+                if (!UserSectors.Count.Equals(0))
+                {
+                    var SelectedSectorIdList = UserSectors.Select(s => s.Id).ToArray();
+                    foreach (var sectorId in SelectedSectorIdList)
+                    {
+                        SelectedSectors.Add(sectors.Where(i => i.Id == sectorId).FirstOrDefault());
+                    }
+                }
+                Loading = false;
+                await JSRuntime.InvokeVoidAsync("console.log", CurrentUser);
+            }
+            SectorList = sectors;
+        }
     }
 
     async void HandleSubmit()
@@ -103,20 +132,4 @@
             await SectorService.UpdateUser(CurrentUser);
         }
     }
-
-    async Task SearchUser(string nameInput)
-    {
-        CurrentUser = new();
-        var ResponseUser = await SectorService.GetOneUser(nameInput);
-        if(!ResponseUser.Id.Equals(0))
-        {
-            CurrentUser = ResponseUser;
-            var UserSectors = await SectorService.GetRelatedSectorIdByUserId(CurrentUser.Id);
-            if (!UserSectors.Count.Equals(0))
-            {
-                SelectedSectors = UserSectors.Select(s => s.SectorId).ToArray();
-            }
-        }
-    }
-
 }

@@ -1,75 +1,60 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Sectors.Server.Data;
+﻿using Microsoft.AspNetCore.Mvc;
+using Sectors.Server.Services;
 using Sectors.Shared;
 
 namespace Sectors.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SectorController : ControllerBase
+    public class SectorController : Controller
     {
-        private readonly DataContext _dataContext;
-        public SectorController(DataContext context)
+        private readonly IRepositoryService _api;
+
+        public SectorController(IRepositoryService api)
         {
-            _dataContext = context;
+            _api = api;
         }
 
         [HttpGet("sectors")]
-        public async Task<IActionResult> GetSectors() => 
-            Ok(await _dataContext
-                .SectorsDb
-                .ToListAsync());     //   THIS SHOULD BE A SERVICE!!! --> Services/DatabaseService
-
-        [HttpGet("users")]
-        public async Task<IActionResult> GetUsers() => 
-            Ok(await _dataContext
-                .UsersDb
-                .ToListAsync());     //   THIS SHOULD BE A SERVICE!!! --> Services/DatabaseService
+        public async Task<ActionResult<SectorModel>> GetSectors()
+        {
+            try
+            {
+                var result  = await _api.GetSectors();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, $"Database Failure: {ex}");
+            }
+        }
 
         [HttpGet("user_sector_relations/{userId}")]
-        public async Task<IActionResult> GetRelatedSectorIdByUserId(int userId) => 
-            Ok(await _dataContext
-                .User_Sectors
-                .Where(x => x.UserId == userId)
-                .ToListAsync());     //   THIS SHOULD BE A SERVICE!!! --> Services/DatabaseService
+        public async Task<IActionResult> GetRelatedSectorIdByUserId(int userId)
+        {
+            try
+            {
+                var result = await _api.GetSectorIdListByUserId(userId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, $"Database Failure: {ex}");
+            }
+        }
 
         [HttpGet("{name}")]
-        public async Task<IActionResult> GetSingleUser(string name)
+        public async Task<ActionResult<UserModel>> GetSingleUser(string userName)
         {
-            var user = await _dataContext
-                .UsersDb
-                .FirstOrDefaultAsync(u => u.Name == name);          //   THIS SHOULD BE A SERVICE!!! --> Services/DatabaseService
-            if (user == null)
-                return NotFound("User not found");
-
-            return Ok(user);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> CreateUser(UserModel user)
-        {
-            _dataContext.UsersDb.Add(user);
-            await _dataContext.SaveChangesAsync();          //   THIS SHOULD BE A SERVICE!!! --> Services/DatabaseService
-
-            return Ok(await GetUsers());
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(UserModel user)
-        {
-            var dbUser = await _dataContext.UsersDb
-                .FirstOrDefaultAsync(h => h.Id == user.Id);
-            if (dbUser == null)
-                return NotFound("No such user");           //   THIS SHOULD BE A SERVICE!!! --> Services/DatabaseService
-
-            dbUser.Name = user.Name;
-            dbUser.Agreed = user.Agreed;
-
-            await _dataContext.SaveChangesAsync();
-
-            return Ok(await GetUsers());
+            try
+            {
+                var result = await _api.GetUserByName(userName);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, $"Database Failure: {ex}");
+            }
         }
     }
 }

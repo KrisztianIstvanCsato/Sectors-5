@@ -2,17 +2,16 @@
 
 namespace Sectors.Client.Services
 {
-    public interface ISectorService
+    public interface IApiService
     {
         event Action OnChange;
         List<UserModel> UserList { get; set; }
         List<SectorModel> SectorList { get; set; }
         UserModel User { get; set; }
-        Task<List<UserModel>> GetUsersData();
+
         Task<List<SectorModel>> GetSectors();
-        Task<List<SectorModel>> GetSectorsBySectorId(int sectorId);
-        Task<List<User_Sector_Model>> GetRelatedSectorIdByUserId(int userId);
-        Task<UserModel> GetOneUser(string name);
+        Task<UserModel> GetUserByName(string name);
+        Task<List<User_Sector_Model>> GetSectorIdListByUserId(int userId);
 
         Task<List<UserModel>> CreateUser(UserModel user);
         Task<List<UserModel>> UpdateUser(UserModel user);

@@ -1,0 +1,53 @@
+﻿@typeparam TItem
+@inject IJSRuntime JSRuntime
+
+<div class="container">
+
+        @foreach (var item in Items)
+        {
+            var id = Guid.NewGuid();
+            <label class="label_item" for="@id">
+           @if(SelectedItems.Contains(item))
+           {
+                <input class="checkbox" checked id="@id" type="checkbox" @onchange="_ => HandleChange(item)" />
+            }
+            else
+            {
+                <input class="checkbox" id="@id" type="checkbox" @onchange="_ => HandleChange(item)" />
+            }
+
+              <div class="option_inner">
+                <div class="name">@ItemTemplate(item)</div>
+              </div>
+            </label>
+        }
+</div>
+
+@code {
+
+    [Parameter]
+    public IEnumerable<TItem> Items { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> ItemTemplate { get; set; }
+
+    [Parameter]
+    public List<TItem> SelectedItems { get; set; }
+
+    [Parameter]
+    public EventCallback<List<TItem>> SelectedItemsChanged { get; set; }
+
+    private void HandleChange(TItem item)
+    {
+        if (SelectedItems.Contains(item))
+        {
+            SelectedItems.Remove(item);
+        }
+        else
+        {
+            SelectedItems.Add(item);
+        }
+
+        SelectedItemsChanged.InvokeAsync(SelectedItems);
+    }
+}

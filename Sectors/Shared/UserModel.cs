@@ -11,8 +11,9 @@ namespace Sectors.Shared
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Enter a name")]
-        [StringLength(50, ErrorMessage = "The name is too long")]
+        //[Required(ErrorMessage = "Enter a name")]
+        //[MinLength(3, ErrorMessage = "The name is too short")]
+        //[StringLength(50, ErrorMessage = "The name is too long")]
         public string Name { get; set; }
         // public List<SectorModel> Sectors { get; set; } // Data Transfer Object / Relationship property
 
@@ -20,10 +21,8 @@ namespace Sectors.Shared
         public bool Agreed { get; set; }
 
         //Navigation prop
+        [Required(ErrorMessage = "Please select at least one sector")]
+        [MinLength(1)]
         public List<User_Sector_Model> UserSectors { get; set; }
-
-        [Required]
-        [MinLength(1, ErrorMessage = "Please select at least {1} sector you are currently working in!")]
-        public int[] SelectedSectors { get; set; }
     }
 }
