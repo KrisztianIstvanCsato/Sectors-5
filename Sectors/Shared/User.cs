@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Sectors.Shared
 {
-    public class UserModel
+    public class User
     {
         public int Id { get; set; }
 
@@ -24,8 +24,6 @@ namespace Sectors.Shared
         ////Navigation prop
         //[Required(ErrorMessage = "Please select at least one sector")]
         //[MinLength(1)]
-        [ForeignKey("UserId")]
-        public int UserId { get; set; }
-        public List<User_Sector_Model>? UserSectors { get; set; }
+        public ICollection<User_Sector> Sectors { get; set; }
     }
 }

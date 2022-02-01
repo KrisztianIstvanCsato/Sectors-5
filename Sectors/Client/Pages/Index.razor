@@ -84,10 +84,10 @@
 </EditForm>
 
 @code {
-    public List<SectorModel> SelectedSectors { get; set; } = new();
-    private SectorModel[] SectorList;
-    public UserModel CurrentUser { get; set; } = new();
-    public EventCallback<List<SectorModel>> SelectedSectorsChanged { get; set; }
+    public List<Sector> SelectedSectors { get; set; } = new();
+    private Sector[] SectorList;
+    public User CurrentUser { get; set; } = new();
+    public EventCallback<List<Sector>> SelectedSectorsChanged { get; set; }
     bool Loading = false;
 
     async Task SearchUser(string nameInput)
@@ -97,7 +97,7 @@
             Loading = true;
             SectorList = null;
             SelectedSectors = new();
-            SectorModel[] sectors = await ApiService.GetSectors();
+            Sector[] sectors = await ApiService.GetSectors();
 
             CurrentUser = new();
             CurrentUser = await ApiService.GetUserByName(nameInput);

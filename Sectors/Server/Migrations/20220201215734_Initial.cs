@@ -29,9 +29,7 @@ namespace Sectors.Server.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Agreed = table.Column<bool>(type: "bit", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    SectorId = table.Column<int>(type: "int", nullable: false)
+                    Agreed = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -42,17 +40,15 @@ namespace Sectors.Server.Migrations
                 name: "User_Sectors",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     SectorId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_User_Sectors", x => x.Id);
+                    table.PrimaryKey("PK_User_Sectors", x => new { x.UserId, x.SectorId });
                     table.ForeignKey(
-                        name: "FK_User_Sectors_SectorsDb_UserId",
-                        column: x => x.UserId,
+                        name: "FK_User_Sectors_SectorsDb_SectorId",
+                        column: x => x.SectorId,
                         principalTable: "SectorsDb",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -159,23 +155,13 @@ namespace Sectors.Server.Migrations
 
             migrationBuilder.InsertData(
                 table: "UsersDb",
-                columns: new[] { "Id", "Agreed", "Name", "SectorId", "UserId" },
-                values: new object[] { 1, true, "TestPerson", 0, 0 });
-
-            migrationBuilder.InsertData(
-                table: "User_Sectors",
-                columns: new[] { "Id", "SectorId", "UserId" },
-                values: new object[] { 1, 1, 1 });
-
-            migrationBuilder.InsertData(
-                table: "User_Sectors",
-                columns: new[] { "Id", "SectorId", "UserId" },
-                values: new object[] { 2, 2, 1 });
+                columns: new[] { "Id", "Agreed", "Name" },
+                values: new object[] { 1, true, "TestPerson" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_User_Sectors_UserId",
+                name: "IX_User_Sectors_SectorId",
                 table: "User_Sectors",
-                column: "UserId");
+                column: "SectorId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

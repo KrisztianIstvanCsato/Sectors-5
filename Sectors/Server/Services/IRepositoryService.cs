@@ -8,10 +8,10 @@ namespace Sectors.Server.Services
         void Delete<T>(T entity) where T : class;
         void Update<T>(T entity) where T : class;
         Task<bool> Save();
-        Task<SectorModel[]> GetSectors();
-        Task<UserModel> GetUserByName(string name);
+        Task<Sector[]> GetSectors();
+        Task<User> GetUserByName(string name);
         Task<int[]> GetSectorIdCollectionByUserId(int userId);
-        Task<UserModel> PostUser(UserModel user);
-        Task<UserModel> PutUser(UserModel user, int id);
+        Task<User> PostUser(User user);
+        Task<User> PutUser(User user, int id);
     }
 }

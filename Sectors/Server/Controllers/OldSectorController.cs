@@ -36,7 +36,7 @@ namespace Sectors.Server.Controllers
                 .UsersDb
                 .FirstOrDefaultAsync(u => u.Name == name);          //   THIS SHOULD BE A SERVICE!!! --> Services/DatabaseService
             if (user == null)
-                return Ok(new UserModel());
+                return Ok(new User());
 
             return Ok(user);
         }

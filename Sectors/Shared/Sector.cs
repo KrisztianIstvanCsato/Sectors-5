@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Sectors.Shared
 {
-    public class SectorModel
+    public class Sector
     {
         public int Id { get; set; }
         public int SectorId { get; set; }
         public string Name { get; set; }
 
         //Navigation prop
-        public List<User_Sector_Model> UserSectors { get; set; }
+        public ICollection<User_Sector> Users { get; set; }
     }
 }

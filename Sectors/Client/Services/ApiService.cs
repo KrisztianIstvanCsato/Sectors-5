@@ -11,9 +11,9 @@ namespace Sectors.Client.Services
             _httpClient = httpClient;
         }
 
-        public async Task<SectorModel[]> GetSectors()
+        public async Task<Sector[]> GetSectors()
         {
-            return await _httpClient.GetFromJsonAsync<SectorModel[]>("api/sector/sectors");
+            return await _httpClient.GetFromJsonAsync<Sector[]>("api/sector/sectors");
         }
 
         public async Task<int[]> GetSectorIdCollectionByUserId(int userId)
@@ -21,9 +21,9 @@ namespace Sectors.Client.Services
             return await _httpClient.GetFromJsonAsync<int[]>($"api/sector/user_sector_relations/{userId}");
         }
 
-        public async Task<UserModel> GetUserByName(string name)
+        public async Task<User> GetUserByName(string name)
         {
-            var responseUser = await _httpClient.GetFromJsonAsync<UserModel>($"api/sector/{name}");
+            var responseUser = await _httpClient.GetFromJsonAsync<User>($"api/sector/{name}");
 
             if (responseUser != null)
                 return responseUser;
@@ -31,14 +31,14 @@ namespace Sectors.Client.Services
                 return null;
         }
 
-        public async Task<HttpResponseMessage> CreateUser(UserModel user)
+        public async Task<HttpResponseMessage> CreateUser(User user)
         {
             Console.WriteLine($"-----------Creating user: {user.Name}----------");
             var result = await _httpClient.PostAsJsonAsync("api/sector", user);
             return result;
         }
 
-        public async Task<HttpResponseMessage> UpdateUser(UserModel user)
+        public async Task<HttpResponseMessage> UpdateUser(User user)
         {
             Console.WriteLine($"Updating user: {user.Name}");
             var result = await _httpClient.PostAsJsonAsync($"api/sector/{user.Id}", user);

@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace Sectors.Shared
 {
-    public class User_Sector_Model
+    public class User_Sector
     {
-        public int Id { get; set; }
         public int UserId { get; set; }
+        public User User { get; set; }
         public int SectorId { get; set; }
-        public UserModel User { get; set; }
-        public SectorModel Sector { get; set; }
+        public Sector Sector { get; set; }
     }
 }

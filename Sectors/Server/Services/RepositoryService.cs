@@ -39,7 +39,7 @@ namespace Sectors.Server.Services
             return (await _dataContext.SaveChangesAsync()) >= 0;
         }
 
-        public async Task<SectorModel[]> GetSectors()
+        public async Task<Sector[]> GetSectors()
         {
             _logger.LogInformation("Getting sectors");
 
@@ -49,7 +49,7 @@ namespace Sectors.Server.Services
             return await query.ToArrayAsync();
         }
 
-        public async Task<UserModel> GetUserByName(string name)
+        public async Task<User> GetUserByName(string name)
         {
             _logger.LogInformation($"Getting user by name {name}");
 
@@ -86,7 +86,7 @@ namespace Sectors.Server.Services
         //    return UserList;
         //}
 
-        public async Task<UserModel> PostUser(UserModel user)
+        public async Task<User> PostUser(User user)
         {
             _logger.LogInformation($"Creating user in service: {user.Id}");
 
@@ -96,7 +96,7 @@ namespace Sectors.Server.Services
             return user;
         }
 
-        public Task<UserModel> PutUser(UserModel user, int id)
+        public Task<User> PutUser(User user, int id)
         {
             throw new NotImplementedException();
         }

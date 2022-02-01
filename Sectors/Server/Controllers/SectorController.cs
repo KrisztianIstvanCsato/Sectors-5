@@ -16,7 +16,7 @@ namespace Sectors.Server.Controllers
         }
 
         [HttpGet("sectors")]
-        public async Task<ActionResult<SectorModel[]>> GetSectors()
+        public async Task<ActionResult<Sector[]>> GetSectors()
         {
             try
             {
@@ -49,13 +49,13 @@ namespace Sectors.Server.Controllers
         }
 
         [HttpGet("{userName}")]
-        public async Task<ActionResult<UserModel>> GetSingleUser(string userName)
+        public async Task<ActionResult<User>> GetSingleUser(string userName)
         {
             try
             {
                 var result = await _api.GetUserByName(userName);
 
-                if (result == null) return new UserModel();
+                if (result == null) return new User();
                 return Ok(result);
             }
             catch (Exception ex)
@@ -65,7 +65,7 @@ namespace Sectors.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<UserModel>> PostSingleUser(UserModel user)
+        public async Task<ActionResult<User>> PostSingleUser(User user)
         {
             try
             {

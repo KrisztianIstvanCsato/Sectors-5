@@ -21,7 +21,7 @@ namespace Sectors.Server.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("Sectors.Server.DTO.SectorDto", b =>
+            modelBuilder.Entity("Sectors.Shared.Sector", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -517,42 +517,7 @@ namespace Sectors.Server.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Sectors.Server.DTO.User_Sector_Model_Dto", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("SectorId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("User_Sectors");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            SectorId = 1,
-                            UserId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            SectorId = 2,
-                            UserId = 1
-                        });
-                });
-
-            modelBuilder.Entity("Sectors.Server.DTO.UserDto", b =>
+            modelBuilder.Entity("Sectors.Shared.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -567,12 +532,6 @@ namespace Sectors.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SectorId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.ToTable("UsersDb");
@@ -582,22 +541,35 @@ namespace Sectors.Server.Migrations
                         {
                             Id = 1,
                             Agreed = true,
-                            Name = "TestPerson",
-                            SectorId = 0,
-                            UserId = 0
+                            Name = "TestPerson"
                         });
                 });
 
-            modelBuilder.Entity("Sectors.Server.DTO.User_Sector_Model_Dto", b =>
+            modelBuilder.Entity("Sectors.Shared.User_Sector", b =>
                 {
-                    b.HasOne("Sectors.Server.DTO.SectorDto", "Sector")
-                        .WithMany("UserSectors")
-                        .HasForeignKey("UserId")
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SectorId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "SectorId");
+
+                    b.HasIndex("SectorId");
+
+                    b.ToTable("User_Sectors");
+                });
+
+            modelBuilder.Entity("Sectors.Shared.User_Sector", b =>
+                {
+                    b.HasOne("Sectors.Shared.Sector", "Sector")
+                        .WithMany("Users")
+                        .HasForeignKey("SectorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Sectors.Server.DTO.UserDto", "User")
-                        .WithMany("UserSectors")
+                    b.HasOne("Sectors.Shared.User", "User")
+                        .WithMany("Sectors")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -607,14 +579,14 @@ namespace Sectors.Server.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Sectors.Server.DTO.SectorDto", b =>
+            modelBuilder.Entity("Sectors.Shared.Sector", b =>
                 {
-                    b.Navigation("UserSectors");
+                    b.Navigation("Users");
                 });
 
-            modelBuilder.Entity("Sectors.Server.DTO.UserDto", b =>
+            modelBuilder.Entity("Sectors.Shared.User", b =>
                 {
-                    b.Navigation("UserSectors");
+                    b.Navigation("Sectors");
                 });
 #pragma warning restore 612, 618
         }
