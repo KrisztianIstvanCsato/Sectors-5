@@ -39,14 +39,14 @@ namespace Sectors.Server.Services
             return (await _dataContext.SaveChangesAsync()) >= 0;
         }
 
-        public async Task<List<SectorModel>> GetSectors()
+        public async Task<SectorModel[]> GetSectors()
         {
             _logger.LogInformation("Getting sectors");
 
             var query = _dataContext.SectorsDb
                         .OrderBy(x => x.Id);
 
-            return await query.ToListAsync();
+            return await query.ToArrayAsync();
         }
 
         public async Task<UserModel> GetUserByName(string name)
@@ -58,7 +58,7 @@ namespace Sectors.Server.Services
             return await query;
         }
 
-        public async Task<int[]> GetSectorIdListByUserId(int userId)
+        public async Task<int[]> GetSectorIdCollectionByUserId(int userId)
         {
             _logger.LogInformation($"Getting sector id list by user id {userId}");
 
@@ -86,12 +86,17 @@ namespace Sectors.Server.Services
         //    return UserList;
         //}
 
-        public Task<UserModel> CreateUser(UserModel user)
+        public async Task<UserModel> PostUser(UserModel user)
         {
-            throw new NotImplementedException();
+            _logger.LogInformation($"Creating user in service: {user.Id}");
+
+            Add(user);
+
+            await Save();
+            return user;
         }
 
-        public Task<UserModel> UpdateUser(UserModel user, int id)
+        public Task<UserModel> PutUser(UserModel user, int id)
         {
             throw new NotImplementedException();
         }

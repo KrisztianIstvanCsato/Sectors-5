@@ -28,8 +28,10 @@ namespace Sectors.Server.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Agreed = table.Column<bool>(type: "bit", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Agreed = table.Column<bool>(type: "bit", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    SectorId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -157,8 +159,8 @@ namespace Sectors.Server.Migrations
 
             migrationBuilder.InsertData(
                 table: "UsersDb",
-                columns: new[] { "Id", "Agreed", "Name" },
-                values: new object[] { 1, true, "TestPerson" });
+                columns: new[] { "Id", "Agreed", "Name", "SectorId", "UserId" },
+                values: new object[] { 1, true, "TestPerson", 0, 0 });
 
             migrationBuilder.InsertData(
                 table: "User_Sectors",

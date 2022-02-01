@@ -1,7 +1,7 @@
 ﻿@page "/"
 @using System.ComponentModel.DataAnnotations
 
-@inject IApiService SectorService
+@inject IApiService ApiService
 @inject HttpClient Http
 @inject IJSRuntime JSRuntime
 
@@ -85,7 +85,7 @@
 
 @code {
     public List<SectorModel> SelectedSectors { get; set; } = new();
-    private List<SectorModel> SectorList;
+    private SectorModel[] SectorList;
     public UserModel CurrentUser { get; set; } = new();
     public EventCallback<List<SectorModel>> SelectedSectorsChanged { get; set; }
     bool Loading = false;
@@ -97,19 +97,17 @@
             Loading = true;
             SectorList = null;
             SelectedSectors = new();
-            List<SectorModel> sectors = await SectorService.GetSectors();
+            SectorModel[] sectors = await ApiService.GetSectors();
 
             CurrentUser = new();
-            CurrentUser = await SectorService.GetUserByName(nameInput);
+            CurrentUser = await ApiService.GetUserByName(nameInput);
             if(CurrentUser != null)
             {
-                CurrentUser.Name = nameInput;
-                List<User_Sector_Model> UserSectors = new();
-                UserSectors = await SectorService.GetSectorIdListByUserId(CurrentUser.Id);
-                if (!UserSectors.Count.Equals(0))
+                int[] UserSectors = { };
+                UserSectors = await ApiService.GetSectorIdCollectionByUserId(CurrentUser.Id);
+                if (!UserSectors.Length.Equals(0))
                 {
-                    var SelectedSectorIdList = UserSectors.Select(s => s.Id).ToArray();
-                    foreach (var sectorId in SelectedSectorIdList)
+                    foreach (var sectorId in UserSectors)
                     {
                         SelectedSectors.Add(sectors.Where(i => i.Id == sectorId).FirstOrDefault());
                     }
@@ -117,19 +115,21 @@
                 Loading = false;
                 await JSRuntime.InvokeVoidAsync("console.log", CurrentUser);
             }
+            CurrentUser.Name = nameInput;
             SectorList = sectors;
         }
     }
 
     async void HandleSubmit()
     {
+        await JSRuntime.InvokeVoidAsync("console.log", "-------- Handle submit");
         if (CurrentUser.Id.Equals(0))
         {
-            await SectorService.CreateUser(CurrentUser);
+            await ApiService.CreateUser(CurrentUser);
         }
         else
         {
-            await SectorService.UpdateUser(CurrentUser);
+            await ApiService.UpdateUser(CurrentUser);
         }
     }
 }

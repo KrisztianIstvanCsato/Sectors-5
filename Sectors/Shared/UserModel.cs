@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,9 +21,11 @@ namespace Sectors.Shared
         [Required(ErrorMessage = "Your agreement is required")]
         public bool Agreed { get; set; }
 
-        //Navigation prop
-        [Required(ErrorMessage = "Please select at least one sector")]
-        [MinLength(1)]
-        public List<User_Sector_Model> UserSectors { get; set; }
+        ////Navigation prop
+        //[Required(ErrorMessage = "Please select at least one sector")]
+        //[MinLength(1)]
+        [ForeignKey("UserId")]
+        public int UserId { get; set; }
+        public List<User_Sector_Model>? UserSectors { get; set; }
     }
 }

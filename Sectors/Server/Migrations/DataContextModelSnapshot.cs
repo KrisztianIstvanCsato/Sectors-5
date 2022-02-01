@@ -21,7 +21,7 @@ namespace Sectors.Server.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("Sectors.Shared.SectorModel", b =>
+            modelBuilder.Entity("Sectors.Server.DTO.SectorDto", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -517,7 +517,7 @@ namespace Sectors.Server.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Sectors.Shared.User_Sector_Model", b =>
+            modelBuilder.Entity("Sectors.Server.DTO.User_Sector_Model_Dto", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -552,7 +552,7 @@ namespace Sectors.Server.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Sectors.Shared.UserModel", b =>
+            modelBuilder.Entity("Sectors.Server.DTO.UserDto", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -565,8 +565,13 @@ namespace Sectors.Server.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SectorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -577,19 +582,21 @@ namespace Sectors.Server.Migrations
                         {
                             Id = 1,
                             Agreed = true,
-                            Name = "TestPerson"
+                            Name = "TestPerson",
+                            SectorId = 0,
+                            UserId = 0
                         });
                 });
 
-            modelBuilder.Entity("Sectors.Shared.User_Sector_Model", b =>
+            modelBuilder.Entity("Sectors.Server.DTO.User_Sector_Model_Dto", b =>
                 {
-                    b.HasOne("Sectors.Shared.SectorModel", "Sector")
+                    b.HasOne("Sectors.Server.DTO.SectorDto", "Sector")
                         .WithMany("UserSectors")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Sectors.Shared.UserModel", "User")
+                    b.HasOne("Sectors.Server.DTO.UserDto", "User")
                         .WithMany("UserSectors")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -600,12 +607,12 @@ namespace Sectors.Server.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Sectors.Shared.SectorModel", b =>
+            modelBuilder.Entity("Sectors.Server.DTO.SectorDto", b =>
                 {
                     b.Navigation("UserSectors");
                 });
 
-            modelBuilder.Entity("Sectors.Shared.UserModel", b =>
+            modelBuilder.Entity("Sectors.Server.DTO.UserDto", b =>
                 {
                     b.Navigation("UserSectors");
                 });
