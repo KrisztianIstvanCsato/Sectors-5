@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Sectors.Server.Data;
 using Sectors.Server.Services;
 using AutoMapper;
+using System.Reflection;
+using Sectors.Server.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,8 +13,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<DataContext>();
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
-builder.Services.AddScoped<IRepositoryService, RepositoryService>();
-builder.Services.AddAutoMapper(typeof(StartupBase));
+builder.Services.AddScoped<IRepository, Repository>();
+builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddScoped<ISeeder, Seeder>();
 
 var app = builder.Build();
 

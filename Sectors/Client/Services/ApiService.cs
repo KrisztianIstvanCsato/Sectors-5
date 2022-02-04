@@ -1,5 +1,6 @@
-﻿using Sectors.Shared;
+﻿using Sectors.Shared.Dtos;
 using System.Net.Http.Json;
+
 
 namespace Sectors.Client.Services
 {
@@ -11,38 +12,38 @@ namespace Sectors.Client.Services
             _httpClient = httpClient;
         }
 
-        public async Task<Sector[]> GetSectors()
+        public async Task<List<SectorDto>> GetSectors()
         {
-            return await _httpClient.GetFromJsonAsync<Sector[]>("api/sector/sectors");
+            return await _httpClient.GetFromJsonAsync<List<SectorDto>>("api/sector/sectors");
         }
 
-        public async Task<int[]> GetSectorIdCollectionByUserId(int userId)
+        public async Task<int[]> GetSectorIdCollectionByUserName(string userName)
         {
-            return await _httpClient.GetFromJsonAsync<int[]>($"api/sector/user_sector_relations/{userId}");
+            return await _httpClient.GetFromJsonAsync<int[]>($"api/sector/usersector/{userName}");
         }
 
-        public async Task<User> GetUserByName(string name)
+        public async Task<UserDto> GetUserByName(string name)
         {
-            var responseUser = await _httpClient.GetFromJsonAsync<User>($"api/sector/{name}");
+            var responseUser = await _httpClient.GetFromJsonAsync<UserDto>($"api/sector/{name}");
 
+            Console.WriteLine("responseUser.Name = " + responseUser.Name);
             if (responseUser != null)
                 return responseUser;
             else
                 return null;
         }
 
-        public async Task<HttpResponseMessage> CreateUser(User user)
+        public async Task CreateUser(UserDto user, List<UserSectorDto> SelectedSectors)
         {
-            Console.WriteLine($"-----------Creating user: {user.Name}----------");
-            var result = await _httpClient.PostAsJsonAsync("api/sector", user);
-            return result;
+            Console.WriteLine($"-----------Creating user: {user.Agreed}-{user.Name}--------");
+            await _httpClient.PostAsJsonAsync("/api/sector", user);
+            await _httpClient.PostAsJsonAsync("/api/sector/userSector", SelectedSectors);
         }
 
-        public async Task<HttpResponseMessage> UpdateUser(User user)
+        public async Task UpdateUser(UserDto user, List<UserSectorDto> SelectedSectors)
         {
             Console.WriteLine($"Updating user: {user.Name}");
-            var result = await _httpClient.PostAsJsonAsync($"api/sector/{user.Id}", user);
-            return result;
+            await _httpClient.PostAsJsonAsync($"/api/sector/{user.Name}", user);
         }
     }
 }

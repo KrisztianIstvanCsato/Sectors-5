@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Sectors.Server.Interfaces;
 using Sectors.Server.Services;
-using Sectors.Shared;
+using Sectors.Shared.Dtos;
 
 namespace Sectors.Server.Controllers
 {
@@ -8,74 +9,90 @@ namespace Sectors.Server.Controllers
     [ApiController]
     public class SectorController : Controller
     {
-        private readonly IRepositoryService _api;
+        private readonly IRepository _repositoryService;
+        private readonly ISeeder _seeder;
 
-        public SectorController(IRepositoryService api)
+        public SectorController(IRepository api, ISeeder seeder)
         {
-            _api = api;
+            _repositoryService = api;
+            _seeder = seeder;
         }
 
         [HttpGet("sectors")]
-        public async Task<ActionResult<Sector[]>> GetSectors()
+        public async Task<IActionResult> GetSectors()
         {
             try
             {
-                var result  = await _api.GetSectors();
+                var result  = await _repositoryService.GetSectors();
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, $"Database Failure: {ex.Message}");
+                return this.StatusCode(StatusCodes.Status500InternalServerError, $"Database Failure(GetSectors): {ex.Message}");
             }
         }
 
-        [HttpGet("user_sector_relations/{userId}")]
-        public async Task<ActionResult<int[]>> GetRelatedSectorIdByUserId(int userId)
-        {
-            try
-            {
-                var result = await _api.GetSectorIdCollectionByUserId(userId);
+        //[HttpGet("usersector/{userName}")]
+        //public async Task<IActionResult> GetRelatedSectorIdByUserId(string userName)
+        //{
+        //    try
+        //    {
+        //        var result = await _repositoryService.GetSectorIdCollectionByUserName(userName);
                 
-                if (result == null)
-                    return new int[0];
+        //        if (result == null)
+        //            return NotFound();
 
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, $"Database Failure: {ex.Message}");
-            }
-        }
+        //        return Ok(result);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return this.StatusCode(StatusCodes.Status500InternalServerError, $"Database Failure(GetRelatedSectorIdByUserId): {ex.Message}");
+        //    }
+        //}
 
         [HttpGet("{userName}")]
-        public async Task<ActionResult<User>> GetSingleUser(string userName)
+        public async Task<ActionResult<UserDto>> GetSingleUser(string userName)
         {
             try
             {
-                var result = await _api.GetUserByName(userName);
+                var result = await _repositoryService.GetUserByName(userName);
 
-                if (result == null) return new User();
+                if (result == null) return new UserDto();
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, $"Database Failure: {ex.Message}");
+                return this.StatusCode(StatusCodes.Status500InternalServerError, $"Database Failure (GetSingleUser): {ex.Message}");
             }
         }
 
         [HttpPost]
-        public async Task<ActionResult<User>> PostSingleUser(User user)
+        public async Task<ActionResult<UserDto>> CreateSingleUser(UserDto user)
         {
             try
             {
-                //Post request
+                await _repositoryService.CreateUser(user);
             }
             catch (Exception ex)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, $"Database Failure: {ex.Message}");
+                return this.StatusCode(StatusCodes.Status500InternalServerError, $"Database Failure(CreateSingleUser): {ex.Message}");
             }
-            return BadRequest();
+            return BadRequest($"Posting user {user.Name} failed");
         }
+
+        //[HttpPost("/api/sector/userSector")]
+        //public async Task<ActionResult<UserSectorDto[]>> CreateUserSectorSelection(List<UserSectorDto> userSectors)
+        //{
+        //    try
+        //    {
+        //        await _repositoryService.CreateUserSectorSelection(userSectors);
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        return this.StatusCode(StatusCodes.Status500InternalServerError, $"Database Failure(CreateUserSectorSelection): {ex.Message}");
+        //    }
+        //    return BadRequest($"Posting user-sector selection failed");
+        //}
     }
 }

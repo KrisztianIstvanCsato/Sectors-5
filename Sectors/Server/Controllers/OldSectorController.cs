@@ -22,12 +22,12 @@ namespace Sectors.Server.Controllers
                 .SectorsDb
                 .ToListAsync());     //   THIS SHOULD BE A SERVICE!!! --> Services/DatabaseService
 
-        [HttpGet("user_sector_relations/{userId}")]
-        public async Task<IActionResult> GetRelatedSectorIdByUserId(int userId) => 
-            Ok(await _dataContext
-                .User_Sectors
-                .Where(x => x.UserId == userId)
-                .ToListAsync());     //   THIS SHOULD BE A SERVICE!!! --> Services/DatabaseService
+        //[HttpGet("user_sector_relations/{userId}")]
+        //public async Task<IActionResult> GetRelatedSectorIdByUserName(string userName) => 
+        //    Ok(await _dataContext
+        //        .UserSectorsDb
+        //        .Where(x => x.UserName == userName)
+        //        .ToListAsync());     //   THIS SHOULD BE A SERVICE!!! --> Services/DatabaseService
 
         [HttpGet("{name}")]
         public async Task<IActionResult> GetSingleUser(string name)

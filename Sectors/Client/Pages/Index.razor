@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using System.ComponentModel.DataAnnotations
+@using Sectors.Shared.Dtos;
 
 @inject IApiService ApiService
 @inject HttpClient Http
@@ -47,7 +48,7 @@
     else
     {
         
-        @if (CurrentUser.Id.Equals(0))
+        @if (@*CurrentUser.Id.Equals(0)*@ true)
         {
             <CreateUserTitle></CreateUserTitle>
         }
@@ -67,11 +68,11 @@
     <ul>
         @foreach (var item in SelectedSectors)
         {
-            <li>@item.Id : @item.Name</li>
+            <li>@item.SectorId : @item.Name</li>
         }
     </ul>
     <br>
-    <p>CurrentUser empty: @CurrentUser.Id.Equals(0)</p>
+    <p>CurrentUser empty: @CurrentUser.Agreed.Equals(null)</p>
     <br>
     <br>
     <InputCheckbox name="agreement" @bind-Value=CurrentUser.Agreed></InputCheckbox>
@@ -84,38 +85,45 @@
 </EditForm>
 
 @code {
-    public List<Sector> SelectedSectors { get; set; } = new();
-    private Sector[] SectorList;
-    public User CurrentUser { get; set; } = new();
-    public EventCallback<List<Sector>> SelectedSectorsChanged { get; set; }
+    public List<SectorDto> SelectedSectors { get; set; } = new();
+    private List<SectorDto> SectorList;
+    private List<SectorDto> sectors;
+    public UserDto CurrentUser { get; set; } = new();
+    public EventCallback<List<SectorDto>> SelectedSectorsChanged { get; set; }
     bool Loading = false;
+
+    protected override async void OnInitialized()
+    {
+        sectors = await ApiService.GetSectors();
+    }
+
+    private void ClearForm()
+    {
+        SectorList = null;
+        SelectedSectors = new();
+        CurrentUser = new();
+    }
 
     async Task SearchUser(string nameInput)
     {
+        ClearForm();
+        CurrentUser.Name = nameInput;
+
         if (nameInput.Length > 0)
         {
             Loading = true;
-            SectorList = null;
-            SelectedSectors = new();
-            Sector[] sectors = await ApiService.GetSectors();
 
-            CurrentUser = new();
             CurrentUser = await ApiService.GetUserByName(nameInput);
-            if(CurrentUser != null)
+
+            if (!CurrentUser.Sectors.Count.Equals(0))
             {
-                int[] UserSectors = { };
-                UserSectors = await ApiService.GetSectorIdCollectionByUserId(CurrentUser.Id);
-                if (!UserSectors.Length.Equals(0))
+                foreach (var sectorId in CurrentUser.Sectors.Select(s => s.SectorId))
                 {
-                    foreach (var sectorId in UserSectors)
-                    {
-                        SelectedSectors.Add(sectors.Where(i => i.Id == sectorId).FirstOrDefault());
-                    }
+                    SelectedSectors.Add(sectors.Where(i => i.SectorId == sectorId).FirstOrDefault());
                 }
-                Loading = false;
-                await JSRuntime.InvokeVoidAsync("console.log", CurrentUser);
             }
-            CurrentUser.Name = nameInput;
+            
+            Loading = false;
             SectorList = sectors;
         }
     }
@@ -123,13 +131,13 @@
     async void HandleSubmit()
     {
         await JSRuntime.InvokeVoidAsync("console.log", "-------- Handle submit");
-        if (CurrentUser.Id.Equals(0))
-        {
-            await ApiService.CreateUser(CurrentUser);
-        }
-        else
-        {
-            await ApiService.UpdateUser(CurrentUser);
-        }
+        //if (CurrentUser.Id.Equals(0))
+        //{
+        //    await ApiService.CreateUser(CurrentUser, SelectedSectors);
+        //}
+        //else
+        //{
+        //    await ApiService.UpdateUser(CurrentUser, SelectedSectors);
+        //}
     }
 }

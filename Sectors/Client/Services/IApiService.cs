@@ -1,14 +1,14 @@
-﻿using Sectors.Shared;
+﻿using Sectors.Shared.Dtos;
 
 namespace Sectors.Client.Services
 {
     public interface IApiService
     {
-        Task<Sector[]> GetSectors();
-        Task<User> GetUserByName(string name);
-        Task<int[]> GetSectorIdCollectionByUserId(int userId);
+        Task<List<SectorDto>> GetSectors();
+        Task<UserDto> GetUserByName(string name);
+        Task<int[]> GetSectorIdCollectionByUserName(string userName);
 
-        Task<HttpResponseMessage> CreateUser(User user);
-        Task<HttpResponseMessage> UpdateUser(User user);
+        Task CreateUser(UserDto user, List<UserSectorDto> CurrentlySelectedSectors);
+        Task UpdateUser(UserDto user, List<UserSectorDto> CurrentlySelectedSectors);
     }
 }

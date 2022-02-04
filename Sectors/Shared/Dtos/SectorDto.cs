@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sectors.Shared
+namespace Sectors.Shared.Dtos
 {
-    public class User_Sector
+    public class SectorDto
     {
-        public int UserId { get; set; }
-        public User User { get; set; }
+        [Key]
         public int SectorId { get; set; }
-        public Sector Sector { get; set; }
+        public string Name { get; set; }
     }
 }
