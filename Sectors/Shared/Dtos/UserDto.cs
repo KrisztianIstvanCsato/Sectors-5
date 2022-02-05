@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,5 +21,8 @@ namespace Sectors.Shared.Dtos
         //[Required(ErrorMessage = "Your agreement is required")]
         public bool Agreed { get; set; }
         public List<UserSectorDto> Sectors { get; set; }
+
+        [NotMapped]
+        public int[] CurrentSelectedSectorIds { get; set; }
     }
 }

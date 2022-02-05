@@ -10,7 +10,7 @@ namespace Sectors.Shared.Models
     public class UserSector
     {
         [Key]
-        public string UserName { get; set; }
+        public int UserId { get; set; }
         public User User { get; set; }
 
         [Key]

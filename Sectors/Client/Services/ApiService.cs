@@ -33,14 +33,12 @@ namespace Sectors.Client.Services
                 return null;
         }
 
-        public async Task CreateUser(UserDto user, List<UserSectorDto> SelectedSectors)
+        public async Task CreateUser(UserDto user)
         {
-            Console.WriteLine($"-----------Creating user: {user.Agreed}-{user.Name}--------");
             await _httpClient.PostAsJsonAsync("/api/sector", user);
-            await _httpClient.PostAsJsonAsync("/api/sector/userSector", SelectedSectors);
         }
 
-        public async Task UpdateUser(UserDto user, List<UserSectorDto> SelectedSectors)
+        public async Task UpdateUser(UserDto user)
         {
             Console.WriteLine($"Updating user: {user.Name}");
             await _httpClient.PostAsJsonAsync($"/api/sector/{user.Name}", user);

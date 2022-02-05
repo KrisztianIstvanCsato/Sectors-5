@@ -20,7 +20,7 @@ namespace Sectors.Shared
         //[Required(ErrorMessage = "Enter a name")]
         //[MinLength(3, ErrorMessage = "The name is too short")]
         //[StringLength(50, ErrorMessage = "The name is too long")]
-        [Key]
+        
         public string Name { get; set; }
         // public List<SectorModel> Sectors { get; set; } // Data Transfer Object / Relationship property
 
@@ -31,5 +31,8 @@ namespace Sectors.Shared
         //[Required(ErrorMessage = "Please select at least one sector")]
         //[MinLength(1)]
         public List<UserSector> Sectors { get; set; }
+
+        [NotMapped]
+        public int[] CurrentSelectedSectorIds { get; set; }
     }
 }
