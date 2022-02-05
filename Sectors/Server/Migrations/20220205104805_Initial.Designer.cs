@@ -11,7 +11,7 @@ using Sectors.Server.Data;
 namespace Sectors.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20220205023422_Initial")]
+    [Migration("20220205104805_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
