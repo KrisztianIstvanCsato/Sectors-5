@@ -1,5 +1,6 @@
 ﻿using Sectors.Server.Interfaces;
 using Sectors.Shared;
+using Sectors.Shared.Models;
 
 namespace Sectors.Server.Services
 {
@@ -94,6 +95,14 @@ namespace Sectors.Server.Services
             new User { Id = 2, Name = "TestPerson2", Agreed = true }
         };
 
+        private List<UserSector> _userSectors = new List<UserSector>
+        {
+            new UserSector{ UserName = "TestPerson1", SectorId = 576 },
+            new UserSector{ UserName = "TestPerson1", SectorId = 25 },
+            new UserSector{ UserName = "TestPerson2", SectorId = 37 },
+            new UserSector{ UserName = "TestPerson2", SectorId = 267 }
+        };
+
         public List<Sector> GetSectors()
         {
             return _sectors;
@@ -102,6 +111,11 @@ namespace Sectors.Server.Services
         public List<User> GetUsers()
         {
             return _userDtos;
+        }
+
+        public List<UserSector> GetUserSectorSamples()
+        {
+            return _userSectors;
         }
     }
 }

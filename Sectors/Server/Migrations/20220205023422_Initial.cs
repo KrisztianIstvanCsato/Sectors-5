@@ -160,6 +160,17 @@ namespace Sectors.Server.Migrations
                     { "TestPerson2", true, 2 }
                 });
 
+            migrationBuilder.InsertData(
+                table: "UserSectorsDb",
+                columns: new[] { "SectorId", "UserName" },
+                values: new object[,]
+                {
+                    { 25, "TestPerson1" },
+                    { 37, "TestPerson2" },
+                    { 267, "TestPerson2" },
+                    { 576, "TestPerson1" }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_UserSectorsDb_UserName",
                 table: "UserSectorsDb",

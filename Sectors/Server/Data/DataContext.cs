@@ -40,6 +40,9 @@ namespace Sectors.Server.Data
                 .HasOne(us => us.Sector)
                 .WithMany(us => us.Users)
                 .HasForeignKey(us => us.SectorId);
+
+            modelBuilder.Entity<UserSector>()
+                .HasData(_seeder.GetUserSectorSamples());
         }
 
         public DbSet<User> UsersDb { get; set; }

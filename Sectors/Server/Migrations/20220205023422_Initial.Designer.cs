@@ -11,7 +11,7 @@ using Sectors.Server.Data;
 namespace Sectors.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20220204145552_Initial")]
+    [Migration("20220205023422_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,6 +36,28 @@ namespace Sectors.Server.Migrations
                     b.HasIndex("UserName");
 
                     b.ToTable("UserSectorsDb");
+
+                    b.HasData(
+                        new
+                        {
+                            SectorId = 576,
+                            UserName = "TestPerson1"
+                        },
+                        new
+                        {
+                            SectorId = 25,
+                            UserName = "TestPerson1"
+                        },
+                        new
+                        {
+                            SectorId = 37,
+                            UserName = "TestPerson2"
+                        },
+                        new
+                        {
+                            SectorId = 267,
+                            UserName = "TestPerson2"
+                        });
                 });
 
             modelBuilder.Entity("Sectors.Shared.Sector", b =>
