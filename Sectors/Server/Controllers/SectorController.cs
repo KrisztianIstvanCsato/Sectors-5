@@ -81,18 +81,18 @@ namespace Sectors.Server.Controllers
             return BadRequest($"Posting user {user.Name} failed");
         }
 
-        //[HttpPost("/api/sector/userSector")]
-        //public async Task<ActionResult<UserSectorDto[]>> CreateUserSectorSelection(List<UserSectorDto> userSectors)
-        //{
-        //    try
-        //    {
-        //        await _repositoryService.CreateUserSectorSelection(userSectors);
-        //    }
-        //    catch(Exception ex)
-        //    {
-        //        return this.StatusCode(StatusCodes.Status500InternalServerError, $"Database Failure(CreateUserSectorSelection): {ex.Message}");
-        //    }
-        //    return BadRequest($"Posting user-sector selection failed");
-        //}
+        [HttpPut("{name}")]
+        public async Task<ActionResult<UserDto>> UpdateSingleUser(string name, UserDto user)
+        {
+            try
+            {
+                await _repositoryService.UpdateUser(user);
+            }
+            catch (Exception ex)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, $"Database Failure(CreateSingleUser): {ex.Message}");
+            }
+            return BadRequest($"Posting user {user.Name} failed");
+        }
     }
 }

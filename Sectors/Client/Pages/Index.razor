@@ -87,9 +87,11 @@
 @code {
     public List<SectorDto> SelectedSectors { get; set; } = new();
     private List<SectorDto> SectorList;
+    public EventCallback<List<SectorDto>> SelectedSectorsChanged { get; set; }
+
+    private string UserNameInput = string.Empty;
     private List<SectorDto> sectors;
     public UserDto CurrentUser { get; set; } = new();
-    public EventCallback<List<SectorDto>> SelectedSectorsChanged { get; set; }
     bool Loading = false;
 
     protected override async void OnInitialized()
@@ -107,22 +109,23 @@
     async Task SearchUser(string nameInput)
     {
         ClearForm();
-        CurrentUser.Name = nameInput;
+        UserNameInput = nameInput;
 
         if (nameInput.Length > 0)
         {
             Loading = true;
 
             CurrentUser = await ApiService.GetUserByName(nameInput);
+            CurrentUser.Name = nameInput;
 
             if (!CurrentUser.Sectors.Count.Equals(0))
             {
-                foreach (var sectorId in CurrentUser.Sectors.Select(s => s.SectorId))
+                foreach (var sector in CurrentUser.Sectors)
                 {
-                    SelectedSectors.Add(sectors.Where(i => i.SectorId == sectorId).FirstOrDefault());
+                    SelectedSectors.Add(sectors.Where(i => i.SectorId == sector.SectorId).FirstOrDefault());
                 }
             }
-            
+
             Loading = false;
             SectorList = sectors;
         }
@@ -130,14 +133,13 @@
 
     async void HandleSubmit()
     {
-        await JSRuntime.InvokeVoidAsync("console.log", "-------- Handle submit");
-        //if (CurrentUser.Id.Equals(0))
-        //{
-        //    await ApiService.CreateUser(CurrentUser, SelectedSectors);
-        //}
-        //else
-        //{
-        //    await ApiService.UpdateUser(CurrentUser, SelectedSectors);
-        //}
+        if (CurrentUser.Sectors.Count.Equals(0))
+        {
+            await ApiService.CreateUser(CurrentUser, SelectedSectors);
+        }
+        else
+        {
+            await ApiService.UpdateUser(CurrentUser, SelectedSectors);
+        }
     }
 }

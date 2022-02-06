@@ -26,7 +26,6 @@ namespace Sectors.Server.Migrations
                 columns: table => new
                 {
                     Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Id = table.Column<int>(type: "int", nullable: false),
                     Agreed = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -153,11 +152,11 @@ namespace Sectors.Server.Migrations
 
             migrationBuilder.InsertData(
                 table: "UsersDb",
-                columns: new[] { "Name", "Agreed", "Id" },
+                columns: new[] { "Name", "Agreed" },
                 values: new object[,]
                 {
-                    { "TestPerson1", true, 1 },
-                    { "TestPerson2", true, 2 }
+                    { "TestPerson1", true },
+                    { "TestPerson2", true }
                 });
 
             migrationBuilder.InsertData(

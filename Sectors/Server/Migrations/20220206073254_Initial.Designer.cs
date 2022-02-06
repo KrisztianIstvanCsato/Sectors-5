@@ -11,7 +11,7 @@ using Sectors.Server.Data;
 namespace Sectors.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20220205104805_Initial")]
+    [Migration("20220206073254_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -482,9 +482,6 @@ namespace Sectors.Server.Migrations
                     b.Property<bool>("Agreed")
                         .HasColumnType("bit");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
                     b.HasKey("Name");
 
                     b.ToTable("UsersDb");
@@ -493,14 +490,12 @@ namespace Sectors.Server.Migrations
                         new
                         {
                             Name = "TestPerson1",
-                            Agreed = true,
-                            Id = 1
+                            Agreed = true
                         },
                         new
                         {
                             Name = "TestPerson2",
-                            Agreed = true,
-                            Id = 2
+                            Agreed = true
                         });
                 });
 

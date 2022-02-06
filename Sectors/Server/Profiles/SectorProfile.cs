@@ -10,8 +10,8 @@ namespace Sectors.Server.Profiles
         public SectorProfile()
         {
             CreateMap<Sector, SectorDto>();
-            CreateMap<User, UserDto>();
-            CreateMap<UserSector, UserSectorDto>();
+            CreateMap<User, UserDto>().ReverseMap();
+            CreateMap<UserSector, UserSectorDto>().ReverseMap();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Sectors.Shared.Dtos;
+﻿using Sectors.Shared;
+using Sectors.Shared.Dtos;
 using System.Net.Http.Json;
 
 
@@ -33,17 +34,24 @@ namespace Sectors.Client.Services
                 return null;
         }
 
-        public async Task CreateUser(UserDto user, List<UserSectorDto> SelectedSectors)
+        public async Task CreateUser(UserDto user, List<SectorDto> selectedSectors)
         {
-            Console.WriteLine($"-----------Creating user: {user.Agreed}-{user.Name}--------");
+            user = CreateCurrentSelection(user, selectedSectors);
             await _httpClient.PostAsJsonAsync("/api/sector", user);
-            await _httpClient.PostAsJsonAsync("/api/sector/userSector", SelectedSectors);
         }
 
-        public async Task UpdateUser(UserDto user, List<UserSectorDto> SelectedSectors)
+        public async Task UpdateUser(UserDto user, List<SectorDto> selectedSectors)
         {
-            Console.WriteLine($"Updating user: {user.Name}");
-            await _httpClient.PostAsJsonAsync($"/api/sector/{user.Name}", user);
+            user = CreateCurrentSelection(user, selectedSectors);
+            await _httpClient.PutAsJsonAsync($"/api/sector/{user.Name}", user);
+        }
+
+        public UserDto CreateCurrentSelection(UserDto userDto, List<SectorDto> CurrentSectorSelection)
+        {
+            userDto.Sectors = new List<UserSectorDto>();
+            CurrentSectorSelection.ForEach(cs => userDto.Sectors.Add(new UserSectorDto { UserName = userDto.Name, SectorId = cs.SectorId }));
+
+            return userDto;
         }
     }
 }

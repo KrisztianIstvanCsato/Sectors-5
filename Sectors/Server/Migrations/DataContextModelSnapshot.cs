@@ -480,9 +480,6 @@ namespace Sectors.Server.Migrations
                     b.Property<bool>("Agreed")
                         .HasColumnType("bit");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
                     b.HasKey("Name");
 
                     b.ToTable("UsersDb");
@@ -491,14 +488,12 @@ namespace Sectors.Server.Migrations
                         new
                         {
                             Name = "TestPerson1",
-                            Agreed = true,
-                            Id = 1
+                            Agreed = true
                         },
                         new
                         {
                             Name = "TestPerson2",
-                            Agreed = true,
-                            Id = 2
+                            Agreed = true
                         });
                 });
 

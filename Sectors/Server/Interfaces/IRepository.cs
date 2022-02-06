@@ -14,6 +14,6 @@ namespace Sectors.Server.Services
         Task<List<UserSectorDto>> GetUserSectorCollectionByUserName(string userName);
         Task<UserDto> CreateUser(UserDto user);
         //Task<List<UserSectorDto>> CreateUserSectorSelection(List<UserSectorDto> userSectors);
-        Task<UserDto> UpdateUser(UserDto user, int id);
+        Task<UserDto> UpdateUser(UserDto user);
     }
 }

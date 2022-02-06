@@ -15,7 +15,6 @@ namespace Sectors.Shared
         {
             Sectors = new List<UserSector>();
         }
-        public int Id { get; set; }
 
         //[Required(ErrorMessage = "Enter a name")]
         //[MinLength(3, ErrorMessage = "The name is too short")]

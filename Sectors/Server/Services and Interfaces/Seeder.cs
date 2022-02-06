@@ -91,8 +91,8 @@ namespace Sectors.Server.Services
 
         private List<User> _userDtos = new List<User>
         {
-            new User { Id = 1, Name = "TestPerson1", Agreed = true },
-            new User { Id = 2, Name = "TestPerson2", Agreed = true }
+            new User { Name = "TestPerson1", Agreed = true },
+            new User { Name = "TestPerson2", Agreed = true }
         };
 
         private List<UserSector> _userSectors = new List<UserSector>

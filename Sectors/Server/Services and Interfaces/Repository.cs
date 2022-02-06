@@ -5,6 +5,7 @@ using Sectors.Shared;
 using Sectors.Shared.Dtos;
 using System.Net.Http.Json;
 using Sectors.Server.Interfaces;
+using Sectors.Shared.Models;
 
 namespace Sectors.Server.Services
 {
@@ -67,10 +68,10 @@ namespace Sectors.Server.Services
             var user = _dataContext.UsersDb
                         .Where(u => u.Name == userName)
                         .FirstOrDefault();
-            var userDto = new UserDto();
-            userDto = _mapper.Map<UserDto>(user);
+            var UserDto = new UserDto();
+            UserDto = _mapper.Map<UserDto>(user);
 
-            return userDto;
+            return UserDto;
         }
 
         public async Task<List<UserSectorDto>> GetUserSectorCollectionByUserName(string userName)
@@ -111,30 +112,39 @@ namespace Sectors.Server.Services
         //    return UserList;
         //}
 
-        public async Task<UserDto> CreateUser(UserDto user)
+        public async Task<UserDto> CreateUser(UserDto UserDto)
         {
-            _logger.LogInformation($"Creating user in service: {user.Name}");
+            _logger.LogInformation($"Creating user in service: {UserDto.Name}");
 
-            Add(user);
+            var User = new User();
+            User = _mapper.Map<User>(UserDto);
+
+            Add(User);
 
             await Save();
-            return user;
+
+            return UserDto;
         }
 
-        public Task<UserDto> UpdateUser(UserDto user, int id)
+        public async Task<UserDto> UpdateUser(UserDto UserDto)
         {
-            throw new NotImplementedException();
-        }
+            _logger.LogInformation($"Updating user in service: {UserDto.Name}");
 
-        public async Task<List<UserSectorDto>> CreateUserSectorSelection(List<UserSectorDto> userSectors)
-        {
-            foreach (var userSector in userSectors)
-            {
-                Add(userSector);
-            }
+            var OldUser = _dataContext.UsersDb
+                            .Where(u => u.Name == UserDto.Name)
+                            .FirstOrDefault();
+            if (OldUser == null)
+                return null;
+
+
+            var User = new User();
+            User = _mapper.Map(UserDto, OldUser);
+
+            Update(User);
 
             await Save();
-            return userSectors;
+
+            return UserDto;
         }
 
     }
