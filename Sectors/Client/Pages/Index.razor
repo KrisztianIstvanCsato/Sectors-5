@@ -35,7 +35,7 @@
      </tbody>
   </table>
 
-  <br>
+  <br />
 
     @if (SectorList == null)
     {
@@ -54,20 +54,20 @@
         {
             <EditUserTitle></EditUserTitle>
         }
-        <br>
+        <br />
         <SelectList Items="SectorList" @bind-SelectedItems="SelectedSectors" Context="sector">
             <ItemTemplate>
                 @sector.Name
             </ItemTemplate>
         </SelectList>
     <hr />
-    <br>
+    <br />
     <InputCheckbox name="agreement" @bind-Value=CurrentUser.Agreed></InputCheckbox>
     <ValidationMessage For=@(() => CurrentUser.Agreed) />
     <label for="agreement">Agree to terms</label>
-    <br>
+    <br />
     <button @onclick="HandleSubmit" name="submit" type="submit">Submit</button>
-    <br>
+    <br />
     }
 </EditForm>
 
