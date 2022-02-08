@@ -28,6 +28,9 @@
         <td>
             <button type="button" class="btn btn-danger" @onclick="@(e => SearchUser(CurrentUser.Name))">Search user</button>
         </td>
+        <td>
+            <button type="button" class="btn btn-warning" @onclick="ClearForm">Clear form</button>
+        </td>
         </tr>
      </tbody>
   </table>
@@ -36,19 +39,14 @@
 
     @if (SectorList == null)
     {
-        @if (Loading == false)
-       {
-           
-       }
-        else
+        @if (Loading)
         {
-            <p><em>Loading...</em></p>
+           <p><em>Loading...</em></p>
         }
     }
     else
     {
-        
-        @if (@*CurrentUser.Id.Equals(0)*@ true)
+        @if (CurrentUser.UserId.Equals(0))
         {
             <CreateUserTitle></CreateUserTitle>
         }
@@ -62,37 +60,25 @@
                 @sector.Name
             </ItemTemplate>
         </SelectList>
-
     <hr />
-
-    <ul>
-        @foreach (var item in SelectedSectors)
-        {
-            <li>@item.SectorId : @item.Name</li>
-        }
-    </ul>
-    <br>
-    <p>CurrentUser empty: @CurrentUser.Agreed.Equals(null)</p>
-    <br>
     <br>
     <InputCheckbox name="agreement" @bind-Value=CurrentUser.Agreed></InputCheckbox>
     <ValidationMessage For=@(() => CurrentUser.Agreed) />
     <label for="agreement">Agree to terms</label>
     <br>
-    <br>
     <button @onclick="HandleSubmit" name="submit" type="submit">Submit</button>
+    <br>
     }
 </EditForm>
 
 @code {
-    public List<SectorDto> SelectedSectors { get; set; } = new();
+    public List<SectorDto> SelectedSectors { get; set; }
     private List<SectorDto> SectorList;
     public EventCallback<List<SectorDto>> SelectedSectorsChanged { get; set; }
 
     private string UserNameInput = string.Empty;
     private List<SectorDto> sectors;
     public UserDto CurrentUser { get; set; } = new();
-    string OriginalNameInput = "";
     bool Loading = false;
 
     protected override async void OnInitialized()
@@ -110,9 +96,8 @@
     async Task SearchUser(string nameInput)
     {
         ClearForm();
-        UserNameInput = nameInput;
 
-        if (nameInput.Length > 0)
+        if (nameInput != null && nameInput.Trim().Length > 0)
         {
             Loading = true;
 
@@ -120,7 +105,7 @@
             
             if (!CurrentUser.Sectors.Count.Equals(0))
             {
-                OriginalNameInput = nameInput;
+                UserNameInput = nameInput;
                 
                 foreach (var sector in CurrentUser.Sectors)
                 {
@@ -145,7 +130,7 @@
         }
         else
         {
-            await ApiService.UpdateUser(OriginalNameInput, CurrentUser, SelectedSectors);
+            await ApiService.UpdateUser(UserNameInput, CurrentUser, SelectedSectors);
         }
     }
 }
