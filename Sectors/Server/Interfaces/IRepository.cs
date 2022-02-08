@@ -10,9 +10,9 @@ namespace Sectors.Server.Services
         void Update<T>(T entity) where T : class;
         Task<bool> Save();
         Task<List<SectorDto>> GetSectors();
-        Task<UserDto> GetUserByName(string name);
+        Task<UserDto> GetUserDtoByName(string name);
         Task<UserDto> CreateUser(UserDto user);
         //Task<List<UserSectorDto>> CreateUserSectorSelection(List<UserSectorDto> userSectors);
-        Task<UserDto> UpdateUser(UserDto user);
+        Task<UserDto> UpdateUser(string UserName, UserDto user);
     }
 }

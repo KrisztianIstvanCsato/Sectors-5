@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Sectors.Server.Interfaces;
 using Sectors.Server.Services;
+using Sectors.Shared;
 using Sectors.Shared.Dtos;
 
 namespace Sectors.Server.Controllers
@@ -56,9 +57,8 @@ namespace Sectors.Server.Controllers
         {
             try
             {
-                var result = await _repositoryService.GetUserByName(userName);
+                var result = await _repositoryService.GetUserDtoByName(userName);
 
-                if (result == null) return new UserDto();
                 return Ok(result);
             }
             catch (Exception ex)
@@ -72,7 +72,7 @@ namespace Sectors.Server.Controllers
         {
             try
             {
-                await _repositoryService.CreateUser(user);
+                return await _repositoryService.CreateUser(user);
             }
             catch (Exception ex)
             {
@@ -82,17 +82,18 @@ namespace Sectors.Server.Controllers
         }
 
         [HttpPut("{name}")]
-        public async Task<ActionResult<UserDto>> UpdateSingleUser(string name, UserDto user)
+        public async Task<ActionResult<UserDto>> UpdateSingleUser(string name, UserDto userDto)
         {
             try
             {
-                await _repositoryService.UpdateUser(user);
+                var test = await _repositoryService.UpdateUser(name, userDto);
+                return test;
             }
             catch (Exception ex)
             {
                 return this.StatusCode(StatusCodes.Status500InternalServerError, $"Database Failure(CreateSingleUser): {ex.Message}");
             }
-            return BadRequest($"Posting user {user.Name} failed");
+            return BadRequest($"Posting user {userDto.Name} failed");
         }
     }
 }

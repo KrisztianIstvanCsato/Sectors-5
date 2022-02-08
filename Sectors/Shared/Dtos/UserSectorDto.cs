@@ -10,7 +10,7 @@ namespace Sectors.Shared.Dtos
     public class UserSectorDto
     {
         [Key]
-        public string UserName { get; set; }
+        public int UserId { get; set; }
         [Key]
         public int SectorId { get; set; }
     }

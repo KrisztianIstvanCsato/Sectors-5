@@ -26,12 +26,12 @@ namespace Sectors.Server.Migrations
                     b.Property<int>("SectorId")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
-                    b.HasKey("SectorId", "UserName");
+                    b.HasKey("SectorId", "UserId");
 
-                    b.HasIndex("UserName");
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserSectorsDb");
 
@@ -39,22 +39,22 @@ namespace Sectors.Server.Migrations
                         new
                         {
                             SectorId = 576,
-                            UserName = "TestPerson1"
+                            UserId = 1
                         },
                         new
                         {
                             SectorId = 25,
-                            UserName = "TestPerson1"
+                            UserId = 1
                         },
                         new
                         {
                             SectorId = 37,
-                            UserName = "TestPerson2"
+                            UserId = 2
                         },
                         new
                         {
                             SectorId = 267,
-                            UserName = "TestPerson2"
+                            UserId = 2
                         });
                 });
 
@@ -474,26 +474,35 @@ namespace Sectors.Server.Migrations
 
             modelBuilder.Entity("Sectors.Shared.User", b =>
                 {
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("UserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"), 1L, 1);
 
                     b.Property<bool>("Agreed")
                         .HasColumnType("bit");
 
-                    b.HasKey("Name");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId");
 
                     b.ToTable("UsersDb");
 
                     b.HasData(
                         new
                         {
-                            Name = "TestPerson1",
-                            Agreed = true
+                            UserId = 1,
+                            Agreed = true,
+                            Name = "TestPerson1"
                         },
                         new
                         {
-                            Name = "TestPerson2",
-                            Agreed = true
+                            UserId = 2,
+                            Agreed = true,
+                            Name = "TestPerson2"
                         });
                 });
 
@@ -507,7 +516,7 @@ namespace Sectors.Server.Migrations
 
                     b.HasOne("Sectors.Shared.User", "User")
                         .WithMany("Sectors")
-                        .HasForeignKey("UserName")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

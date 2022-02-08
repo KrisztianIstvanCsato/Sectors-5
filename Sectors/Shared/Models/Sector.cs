@@ -15,6 +15,6 @@ namespace Sectors.Shared
         public string Name { get; set; }
 
         //Navigation prop
-        public virtual ICollection<UserSector> Users { get; set; }
+        public virtual List<UserSector> Users { get; set; }
     }
 }

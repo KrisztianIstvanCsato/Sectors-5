@@ -1,5 +1,6 @@
 ﻿using Sectors.Shared;
 using Sectors.Shared.Dtos;
+using Sectors.Shared.Models;
 using System.Net.Http.Json;
 
 
@@ -28,28 +29,32 @@ namespace Sectors.Client.Services
             var responseUser = await _httpClient.GetFromJsonAsync<UserDto>($"api/sector/{name}");
 
             Console.WriteLine("responseUser.Name = " + responseUser.Name);
-            if (responseUser != null)
-                return responseUser;
-            else
-                return null;
+            
+            return responseUser;
         }
 
-        public async Task CreateUser(UserDto user, List<SectorDto> selectedSectors)
+        public async Task<UserDto> CreateUser(UserDto userDto, List<SectorDto> selectedSectors)
         {
-            user = CreateCurrentSelection(user, selectedSectors);
-            await _httpClient.PostAsJsonAsync("/api/sector", user);
+            userDto = CreateCurrentSelection(userDto, selectedSectors);
+            var response = await _httpClient.PostAsJsonAsync("/api/sector", userDto);
+            userDto = await response.Content.ReadFromJsonAsync<UserDto>();
+
+            return userDto;
         }
 
-        public async Task UpdateUser(UserDto user, List<SectorDto> selectedSectors)
+        public async Task<UserDto> UpdateUser(string OriginalNameInput, UserDto userDto, List<SectorDto> selectedSectors)
         {
-            user = CreateCurrentSelection(user, selectedSectors);
-            await _httpClient.PutAsJsonAsync($"/api/sector/{user.Name}", user);
+            var user = CreateCurrentSelection(userDto, selectedSectors);
+            var response = await _httpClient.PutAsJsonAsync($"/api/sector/{OriginalNameInput}", user);
+            userDto = await response.Content.ReadFromJsonAsync<UserDto>();
+
+            return userDto;
         }
 
         public UserDto CreateCurrentSelection(UserDto userDto, List<SectorDto> CurrentSectorSelection)
         {
             userDto.Sectors = new List<UserSectorDto>();
-            CurrentSectorSelection.ForEach(cs => userDto.Sectors.Add(new UserSectorDto { UserName = userDto.Name, SectorId = cs.SectorId }));
+            CurrentSectorSelection.ForEach(cs => userDto.Sectors.Add(new UserSectorDto { UserId = userDto.UserId, SectorId = cs.SectorId }));
 
             return userDto;
         }

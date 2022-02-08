@@ -15,10 +15,11 @@ namespace Sectors.Shared.Dtos
         }
 
         [Key]
+        public int UserId { get; set; }
         public string Name { get; set; }
 
         //[Required(ErrorMessage = "Your agreement is required")]
         public bool Agreed { get; set; }
-        public List<UserSectorDto> Sectors { get; set; }
+        public virtual List<UserSectorDto> Sectors { get; set; }
     }
 }

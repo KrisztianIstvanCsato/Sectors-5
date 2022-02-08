@@ -6,6 +6,7 @@ using Sectors.Shared.Dtos;
 using System.Net.Http.Json;
 using Sectors.Server.Interfaces;
 using Sectors.Shared.Models;
+using System.Linq;
 
 namespace Sectors.Server.Services
 {
@@ -56,96 +57,107 @@ namespace Sectors.Server.Services
             return mapped;
         }
 
-        public async Task<UserDto> GetUserByName(string userName)
+        public async Task<UserDto> GetUserDtoByName(string userName)
         {
-            _logger.LogInformation($"Getting user by name {userName}");
-            
-            var userSectorDtos = await GetUserSectorCollectionByUserName(userName);
+            var User = GetUserByName(userName).Result;
 
-            if(userSectorDtos == null)
-                return null;
+            if (User == null)
+                return new UserDto();
 
-            var user = _dataContext.UsersDb
-                        .Where(u => u.Name == userName)
-                        .FirstOrDefault();
-            var UserDto = new UserDto();
-            UserDto = _mapper.Map<UserDto>(user);
+            var UserDto = _mapper.Map<UserDto>(User);
+
+            UserDto.Sectors = await GetUserSectorCollectionByUserId(User.UserId);
 
             return UserDto;
         }
 
-        public async Task<List<UserSectorDto>> GetUserSectorCollectionByUserName(string userName)
+        public async Task<User> GetUserByName(string userName)
         {
+            _logger.LogInformation($"Getting user by name {userName}");
+
+            var User = _dataContext.UsersDb
+                        .Where(u => u.Name == userName)
+                        .FirstOrDefault();
+
+            return User;
+        }
+
+        public async Task<List<UserSectorDto>> GetUserSectorCollectionByUserId(int userId)
+        {
+            _logger.LogInformation($"Getting sector id list by user id {userId}");
+
             var userSectors = _dataContext.UserSectorsDb
-                            .Where(us => us.UserName == userName)
+                            .Where(us => us.UserId == userId)
                             .ToList();
 
             var userSectorDto = _mapper.Map<List<UserSectorDto>>(userSectors);
             return userSectorDto;
         }
 
-        public async Task<UserSectorDto[]> GetSectorIdCollectionByUserName(string userName)
+        public async Task<UserSector> GetUserSectorCollectionBySectorId(int sectorIs)
         {
-            _logger.LogInformation($"Getting sector id list by user id {userName}");
+            _logger.LogInformation($"Getting sector id list by user id {sectorIs}");
 
-            var query = _dataContext.UserSectorsDb
-                        .Where(u => u.UserName == userName)
-                        .ToArray();
-            var mapped = _mapper.Map<UserSectorDto[]>(query);
-            return mapped;
+            var userSectors = _dataContext.UserSectorsDb
+                            .Where(us => us.SectorId == sectorIs)
+                            .FirstOrDefault();
+
+            return userSectors;
         }
-
-        //public async Task<List<UserModel>> CreateUser(UserModel user)
-        //{
-        //    Console.WriteLine("Creating user");
-        //    var result = await _httpClient.PostAsJsonAsync("api/sector", user);
-        //    UserList = await result.Content.ReadFromJsonAsync<List<UserModel>>();
-        //    OnChange.Invoke();
-        //    return UserList;
-        //}
-
-        //public async Task<List<UserModel>> UpdateUser(UserModel user)
-        //{
-        //    var result = await _httpClient.PostAsJsonAsync($"api/sector/{user.Id}", user);
-        //    UserList = await result.Content.ReadFromJsonAsync<List<UserModel>>();
-        //    OnChange.Invoke();
-        //    return UserList;
-        //}
 
         public async Task<UserDto> CreateUser(UserDto UserDto)
         {
             _logger.LogInformation($"Creating user in service: {UserDto.Name}");
 
-            var User = new User();
-            User = _mapper.Map<User>(UserDto);
+            var User = _mapper.Map<User>(UserDto);
 
             Add(User);
 
             await Save();
 
+            UserDto = _mapper.Map<UserDto>(User);
+
             return UserDto;
         }
 
-        public async Task<UserDto> UpdateUser(UserDto UserDto)
+        public async Task<UserDto> UpdateUser(string InputName, UserDto UserDto)
         {
             _logger.LogInformation($"Updating user in service: {UserDto.Name}");
 
-            var OldUser = _dataContext.UsersDb
-                            .Where(u => u.Name == UserDto.Name)
-                            .FirstOrDefault();
-            if (OldUser == null)
-                return null;
+            //var OriginalUserDto = new UserDto();
+            var OriginalUserDto = await GetUserDtoByName(InputName);
 
+            var User = _dataContext.Set<User>()
+                .Local
+                .FirstOrDefault(entity => entity.UserId.Equals(UserDto.UserId));
 
-            var User = new User();
-            User = _mapper.Map(UserDto, OldUser);
+            if (User != null)
+            {
+                // detach
+                _dataContext.Entry(User).State = EntityState.Detached;
+            }
 
-            Update(User);
+            var UpdatedUser = _mapper.Map<User>(UserDto);
+
+            _dataContext.Entry(UpdatedUser).State = EntityState.Modified;
+            
+            UpdatedUser.Name = UserDto.Name;
+
+            var UpdatesSectors = _mapper.Map<List<UserSector>>(UserDto.Sectors);
+            UpdatedUser.Sectors = UpdatesSectors;
+
+            var SectorsToRemove = OriginalUserDto.Sectors.Except(UserDto.Sectors).ToList();
+
+            Update(UpdatedUser);
+
+            var sectors = new List<UserSector>();
+            SectorsToRemove.ForEach(str => sectors.Add(GetUserSectorCollectionBySectorId(str.SectorId).Result));
+
+            sectors.ForEach(str => Delete(str));
 
             await Save();
 
             return UserDto;
         }
-
     }
 }

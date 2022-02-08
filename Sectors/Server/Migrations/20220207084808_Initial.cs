@@ -25,24 +25,26 @@ namespace Sectors.Server.Migrations
                 name: "UsersDb",
                 columns: table => new
                 {
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Agreed = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UsersDb", x => x.Name);
+                    table.PrimaryKey("PK_UsersDb", x => x.UserId);
                 });
 
             migrationBuilder.CreateTable(
                 name: "UserSectorsDb",
                 columns: table => new
                 {
-                    UserName = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
                     SectorId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserSectorsDb", x => new { x.SectorId, x.UserName });
+                    table.PrimaryKey("PK_UserSectorsDb", x => new { x.SectorId, x.UserId });
                     table.ForeignKey(
                         name: "FK_UserSectorsDb_SectorsDb_SectorId",
                         column: x => x.SectorId,
@@ -50,10 +52,10 @@ namespace Sectors.Server.Migrations
                         principalColumn: "SectorId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserSectorsDb_UsersDb_UserName",
-                        column: x => x.UserName,
+                        name: "FK_UserSectorsDb_UsersDb_UserId",
+                        column: x => x.UserId,
                         principalTable: "UsersDb",
-                        principalColumn: "Name",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -152,28 +154,28 @@ namespace Sectors.Server.Migrations
 
             migrationBuilder.InsertData(
                 table: "UsersDb",
-                columns: new[] { "Name", "Agreed" },
+                columns: new[] { "UserId", "Agreed", "Name" },
                 values: new object[,]
                 {
-                    { "TestPerson1", true },
-                    { "TestPerson2", true }
+                    { 1, true, "TestPerson1" },
+                    { 2, true, "TestPerson2" }
                 });
 
             migrationBuilder.InsertData(
                 table: "UserSectorsDb",
-                columns: new[] { "SectorId", "UserName" },
+                columns: new[] { "SectorId", "UserId" },
                 values: new object[,]
                 {
-                    { 25, "TestPerson1" },
-                    { 37, "TestPerson2" },
-                    { 267, "TestPerson2" },
-                    { 576, "TestPerson1" }
+                    { 25, 1 },
+                    { 37, 2 },
+                    { 267, 2 },
+                    { 576, 1 }
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserSectorsDb_UserName",
+                name: "IX_UserSectorsDb_UserId",
                 table: "UserSectorsDb",
-                column: "UserName");
+                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

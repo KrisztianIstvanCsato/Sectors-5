@@ -29,12 +29,12 @@ namespace Sectors.Server.Data
                 .HasData(_seeder.GetSectors());
 
             modelBuilder.Entity<UserSector>()
-                .HasKey(us => new { us.SectorId, us.UserName });
+                .HasKey(us => new { us.SectorId, us.UserId });
 
             modelBuilder.Entity<UserSector>()
                 .HasOne(us => us.User)
                 .WithMany(us => us.Sectors)
-                .HasForeignKey(us => us.UserName);
+                .HasForeignKey(us => us.UserId);
 
             modelBuilder.Entity<UserSector>()
                 .HasOne(us => us.Sector)

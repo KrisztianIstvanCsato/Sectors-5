@@ -20,6 +20,7 @@ namespace Sectors.Shared
         //[MinLength(3, ErrorMessage = "The name is too short")]
         //[StringLength(50, ErrorMessage = "The name is too long")]
         [Key]
+        public int UserId { get; set; }
         public string Name { get; set; }
         // public List<SectorModel> Sectors { get; set; } // Data Transfer Object / Relationship property
 
@@ -29,6 +30,6 @@ namespace Sectors.Shared
         ////Navigation prop
         //[Required(ErrorMessage = "Please select at least one sector")]
         //[MinLength(1)]
-        public List<UserSector> Sectors { get; set; }
+        public virtual List<UserSector> Sectors { get; set; }
     }
 }

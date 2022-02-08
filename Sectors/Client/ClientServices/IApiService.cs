@@ -8,9 +8,8 @@ namespace Sectors.Client.Services
         Task<List<SectorDto>> GetSectors();
         Task<UserDto> GetUserByName(string name);
         Task<int[]> GetSectorIdCollectionByUserName(string userName);
-
-        Task CreateUser(UserDto user, List<SectorDto> selectedSectors);
-        Task UpdateUser(UserDto user, List<SectorDto>SelectedSectors);
+        Task<UserDto> CreateUser(UserDto userDto, List<SectorDto> selectedSectors);
+        Task<UserDto> UpdateUser(string originalNameInput, UserDto userDto, List<SectorDto>SelectedSectors);
         UserDto CreateCurrentSelection(UserDto userDto, List<SectorDto> CurrentSectorSelection);
     }
 }

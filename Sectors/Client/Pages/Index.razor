@@ -92,6 +92,7 @@
     private string UserNameInput = string.Empty;
     private List<SectorDto> sectors;
     public UserDto CurrentUser { get; set; } = new();
+    string OriginalNameInput = "";
     bool Loading = false;
 
     protected override async void OnInitialized()
@@ -116,14 +117,19 @@
             Loading = true;
 
             CurrentUser = await ApiService.GetUserByName(nameInput);
-            CurrentUser.Name = nameInput;
-
+            
             if (!CurrentUser.Sectors.Count.Equals(0))
             {
+                OriginalNameInput = nameInput;
+                
                 foreach (var sector in CurrentUser.Sectors)
                 {
                     SelectedSectors.Add(sectors.Where(i => i.SectorId == sector.SectorId).FirstOrDefault());
                 }
+            }
+            else
+            {
+                CurrentUser.Name = nameInput;
             }
 
             Loading = false;
@@ -135,11 +141,11 @@
     {
         if (CurrentUser.Sectors.Count.Equals(0))
         {
-            await ApiService.CreateUser(CurrentUser, SelectedSectors);
+            CurrentUser = await ApiService.CreateUser(CurrentUser, SelectedSectors);
         }
         else
         {
-            await ApiService.UpdateUser(CurrentUser, SelectedSectors);
+            await ApiService.UpdateUser(OriginalNameInput, CurrentUser, SelectedSectors);
         }
     }
 }
