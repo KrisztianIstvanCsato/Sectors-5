@@ -11,7 +11,7 @@
 <h1>Sectors</h1>
 
 <label name="call_for_action">Please enter your name and pick the Sectors you are currently involved in.</label>
-
+<br>
 <EditForm Model="CurrentUser" OnInvalidSubmit="HandleSubmit">
     <DataAnnotationsValidator />
 <table>
@@ -77,13 +77,13 @@
     public EventCallback<List<SectorDto>> SelectedSectorsChanged { get; set; }
 
     private string UserNameInput = string.Empty;
-    private List<SectorDto> sectors;
+    private List<SectorDto> HiddenSectors;
     public UserDto CurrentUser { get; set; } = new();
     bool Loading = false;
 
     protected override async void OnInitialized()
     {
-        sectors = await ApiService.GetSectors();
+        HiddenSectors = await ApiService.GetSectors();
     }
 
     private void ClearForm()
@@ -109,7 +109,7 @@
                 
                 foreach (var sector in CurrentUser.Sectors)
                 {
-                    SelectedSectors.Add(sectors.Where(i => i.SectorId == sector.SectorId).FirstOrDefault());
+                    SelectedSectors.Add(HiddenSectors.Where(i => i.SectorId == sector.SectorId).FirstOrDefault());
                 }
             }
             else
@@ -118,7 +118,7 @@
             }
 
             Loading = false;
-            SectorList = sectors;
+            SectorList = HiddenSectors;
         }
     }
 
