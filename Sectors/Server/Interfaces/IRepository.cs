@@ -9,10 +9,9 @@ namespace Sectors.Server.Services
         void Delete<T>(T entity) where T : class;
         void Update<T>(T entity) where T : class;
         Task<bool> Save();
-        Task<List<SectorDto>> GetSectors();
-        Task<UserDto> GetUserDtoByName(string name);
-        Task<UserDto> CreateUser(UserDto user);
-        //Task<List<UserSectorDto>> CreateUserSectorSelection(List<UserSectorDto> userSectors);
-        Task<UserDto> UpdateUser(string UserName, UserDto user);
+        Task<List<SectorDto>> GetSectorDtos();
+        Task<UserDto> GetUserDtoByName(string Name);
+        Task<UserDto> CreateUser(UserDto User);
+        Task<UserDto> UpdateUser(string UserName, UserDto User);
     }
 }

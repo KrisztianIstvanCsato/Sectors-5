@@ -102,19 +102,13 @@
             Loading = true;
 
             CurrentUser = await ApiService.GetUserByName(nameInput);
-            
-            if (!CurrentUser.Sectors.Count.Equals(0))
+            CurrentUser.Name = nameInput;
+            UserNameInput = nameInput;
+
+            if (!CurrentUser.UserId.Equals(0))
             {
-                UserNameInput = nameInput;
-                
-                foreach (var sector in CurrentUser.Sectors)
-                {
-                    SelectedSectors.Add(HiddenSectors.Where(i => i.SectorId == sector.SectorId).FirstOrDefault());
-                }
-            }
-            else
-            {
-                CurrentUser.Name = nameInput;
+                var SelectedSectorIds = CurrentUser.Sectors.Select(cs => cs.SectorId).ToList();
+                SelectedSectors = HiddenSectors.Where(hs => SelectedSectorIds.Contains(hs.SectorId)).ToList();
             }
 
             Loading = false;
@@ -124,13 +118,18 @@
 
     async void HandleSubmit()
     {
-        if (CurrentUser.Sectors.Count.Equals(0))
+        if (CurrentUser.Name != null && CurrentUser.Name.Trim().Length > 0)
         {
-            CurrentUser = await ApiService.CreateUser(CurrentUser, SelectedSectors);
-        }
-        else
-        {
-            await ApiService.UpdateUser(UserNameInput, CurrentUser, SelectedSectors);
+            var IsNameAllowed = true;
+            if(!UserNameInput.Equals(CurrentUser.Name))
+            {
+                IsNameAllowed = await ApiService.FindNameInUse(CurrentUser.Name);
+            }
+
+            if(IsNameAllowed)
+            {
+                CurrentUser = await ApiService.UserOperation(UserNameInput, CurrentUser, SelectedSectors);
+            }
         }
     }
 }

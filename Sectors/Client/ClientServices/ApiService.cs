@@ -26,37 +26,47 @@ namespace Sectors.Client.Services
 
         public async Task<UserDto> GetUserByName(string name)
         {
-            var responseUser = await _httpClient.GetFromJsonAsync<UserDto>($"api/sector/{name}");
-
-            Console.WriteLine("responseUser.Name = " + responseUser.Name);
-            
-            return responseUser;
+            return await _httpClient.GetFromJsonAsync<UserDto>($"api/sector/{name}");
         }
 
-        public async Task<UserDto> CreateUser(UserDto userDto, List<SectorDto> selectedSectors)
+        public async Task<UserDto> UserOperation(string OriginalNameInput, UserDto CurrentUser, List<SectorDto> SelectedSectors)
         {
-            userDto = CreateCurrentSelection(userDto, selectedSectors);
-            var response = await _httpClient.PostAsJsonAsync("/api/sector", userDto);
-            userDto = await response.Content.ReadFromJsonAsync<UserDto>();
-
-            return userDto;
+            if (CurrentUser.UserId.Equals(0))
+            {
+                return await CreateUser(CurrentUser, SelectedSectors);
+            }
+            else
+            {
+                return await UpdateUser(OriginalNameInput, CurrentUser, SelectedSectors);
+            }
         }
 
-        public async Task<UserDto> UpdateUser(string OriginalNameInput, UserDto userDto, List<SectorDto> selectedSectors)
+        public async Task<UserDto> CreateUser(UserDto UserDto, List<SectorDto> selectedSectors)
         {
-            var user = CreateCurrentSelection(userDto, selectedSectors);
-            var response = await _httpClient.PutAsJsonAsync($"/api/sector/{OriginalNameInput}", user);
-            userDto = await response.Content.ReadFromJsonAsync<UserDto>();
-
-            return userDto;
+            UserDto = CreateCurrentUserSectorDtoSelection(UserDto, selectedSectors);
+            var response = await _httpClient.PostAsJsonAsync("/api/sector", UserDto);
+            return await response.Content.ReadFromJsonAsync<UserDto>();
         }
 
-        public UserDto CreateCurrentSelection(UserDto userDto, List<SectorDto> CurrentSectorSelection)
+        public async Task<UserDto> UpdateUser(string NameInput, UserDto UserDto, List<SectorDto> selectedSectors)
         {
-            userDto.Sectors = new List<UserSectorDto>();
-            CurrentSectorSelection.ForEach(cs => userDto.Sectors.Add(new UserSectorDto { UserId = userDto.UserId, SectorId = cs.SectorId }));
+            var user = CreateCurrentUserSectorDtoSelection(UserDto, selectedSectors);
+            var response = await _httpClient.PutAsJsonAsync($"/api/sector/{NameInput}", user);
+            return await response.Content.ReadFromJsonAsync<UserDto>();
+        }
 
-            return userDto;
+        public UserDto CreateCurrentUserSectorDtoSelection(UserDto UserDto, List<SectorDto> CurrentSectorSelection)
+        {
+            UserDto.Sectors = new List<UserSectorDto>();
+            CurrentSectorSelection.ForEach(cs => UserDto.Sectors.Add(new UserSectorDto { UserId = UserDto.UserId, SectorId = cs.SectorId }));
+
+            return UserDto;
+        }
+
+        public async Task<bool> FindNameInUse(string UserName)
+        {
+            var NewNameUser = await GetUserByName(UserName);
+            return NewNameUser.UserId.Equals(0) ? true : false;
         }
     }
 }
