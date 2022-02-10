@@ -9,28 +9,27 @@
 <PageTitle>Sectors</PageTitle>
 
 <h1>Sectors</h1>
-
+<br>
 <label name="call_for_action">Please enter your name and pick the Sectors you are currently involved in.</label>
+<br>
 <br>
 <EditForm Model="CurrentUser" OnInvalidSubmit="HandleSubmit">
     <DataAnnotationsValidator />
 <table>
     <tbody>
         <tr>
-        <td>
-            <div>
-                <label>Name</label>
-                <InputText name="name" @bind-Value="CurrentUser.Name"></InputText>
-                <ValidationMessage For=@(() => CurrentUser.Name) />
-                <br>
-            </div>
-        </td>
-        <td>
-            <button type="button" class="btn btn-danger" @onclick="@(e => SearchUser(CurrentUser.Name))">Search user</button>
-        </td>
-        <td>
-            <button type="button" class="btn btn-warning" @onclick="ClearForm">Clear form</button>
-        </td>
+            <td>
+                <div>
+                    <label>Name</label>
+                    <InputText name="name" @bind-Value="CurrentUser.Name"></InputText>
+                    <ValidationMessage For=@(() => CurrentUser.Name) />
+                    <br>
+                </div>
+            </td>
+            <td>
+                <button type="button" class="btn btn-danger" @onclick="@(e => SearchUser(CurrentUser.Name))">Search</button>
+                <button type="button" class="btn btn-warning" @onclick="ClearForm">Clear</button>
+            </td>
         </tr>
      </tbody>
   </table>
@@ -66,7 +65,9 @@
     <ValidationMessage For=@(() => CurrentUser.Agreed) />
     <label for="agreement">Agree to terms</label>
     <br>
+    <br>
     <button @onclick="HandleSubmit" name="submit" type="submit">Submit</button>
+    <br>
     <br>
     }
 </EditForm>
