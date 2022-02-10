@@ -244,47 +244,64 @@ namespace Sectors.Server.Data
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Water
     </option>";
 
-        // This monster function... I mean baby angel is extracting the hierarchy of the sector objects
-        // for the dropdown from the relevant part of the html file I was provided with.
-        // Please, go easy on me, cos it's ugly as hell, difficult to maintain and a "bit" over-engineered.
-        // I have experimented with HTMLAgilityPack and Regex, but I didn't get the desired result,
-        // so I've decided to sculpt this masterpiece. Sorry about that.
-        // On this way I make sure the lines are not taken out of context.
-        // In case you happened to know some proven tool to do this an elegant way, pretty please, enlighten me!
-
         public static List<Sector> ProcessSample()
         {
-            var processedSample = _sectorSampleString;
+            var CleanSample = CleanSampleString(_sectorSampleString);
+            var InitialList = CreateInitialList(CleanSample);
+            var SectorList = CreateSectorList(InitialList);
+            SectorList = ExtractHierarchy(SectorList);
+
+            return SectorList;
+        }
+
+        private static string CleanSampleString(string sample)
+        {
+            sample = Regex.Replace(sample, @"\n|\r", "");
+            return sample.Replace("<option value=", "")
+                            .Replace(@"option>", "");
+        }
+
+        private static List<string> CreateInitialList(string sample)
+        {
+            var InitialList = new List<string>();
+            sample.Split("</").ToList().ForEach(s => InitialList.Add(s));
+            InitialList.RemoveAt(InitialList.Count - 1);
+
+            return InitialList;
+        }
+
+        private static List<Sector> CreateSectorList(List<string> InitialList)
+        {
             List<Sector> SectorList = new();
 
-            processedSample = processedSample
-                .Replace("<option value=", "")
-                .Replace(@"</option>", ",,");
-            processedSample = processedSample.Substring(0, processedSample.LastIndexOf(",,"));
-            processedSample = Regex.Replace(processedSample, @"\n|\r", "");
+            foreach (string sectorString in InitialList)
+            {
+                var split = sectorString.Split(">");
+                SectorList.Add(new Sector { SectorId = Int32.Parse(split[0].Trim()), Name = split[1].Trim() });
+            }
 
-            var sampleArray = processedSample.Split(",,");
+            foreach (var sector in SectorList)
+            {
+                sector.Parent = (int)Math.Round(((sector.Name.Split("&nbsp;").Length - 1) / 4m));
+                sector.Name = sector.Name.Replace("&nbsp;", "").Trim();
+            }
+            return SectorList;
+        }
+
+        private static List<Sector> ExtractHierarchy(List<Sector> SectorList)
+        {
             var PreviousLevel = 0; // Records closest relative position on the tree
-
             var SectorLevels = new List<int>();
 
-            for(var i = 0; i < sampleArray.Length; i++)
+            foreach (var sector in SectorList)
             {
-                var Sector = new Sector();
-                var sampleSplitArray = sampleArray[i].Split(">");
-
-                Sector.SectorId = Int32.Parse(sampleSplitArray[0].Trim());
-
-                var SectorName = sampleSplitArray[1].Trim();
-
-                var SampleLevel = (int)Math.Round(((SectorName.Split("&nbsp;").Length - 1) / 4m)); // 
-
+                var SampleLevel = sector.Parent;
                 var Level = SampleLevel - PreviousLevel;
 
                 if (Level > 0)
                 {
-                    Sector.Parent = SectorLevels.Last();
-                    SectorLevels.Add(Sector.SectorId);
+                    sector.Parent = SectorLevels.Last();
+                    SectorLevels.Add(sector.SectorId);
                 }
                 else if (Level < 0)
                 {
@@ -292,10 +309,10 @@ namespace Sectors.Server.Data
 
                     if (!SectorLevels.Count.Equals(0)) // Otherwise root sector (Parent = 0)
                     {
-                        Sector.Parent = SectorLevels.Last();
+                        sector.Parent = SectorLevels.Last();
                     }
 
-                    SectorLevels.Add(Sector.SectorId);
+                    SectorLevels.Add(sector.SectorId);
                 }
                 else
                 {
@@ -306,33 +323,28 @@ namespace Sectors.Server.Data
 
                     if (SectorLevels.Count > 0) //Otherwise root sector
                     {
-                        Sector.Parent = SectorLevels.Last();
+                        sector.Parent = SectorLevels.Last();
                     }
 
-                    SectorLevels.Add(Sector.SectorId);
+                    SectorLevels.Add(sector.SectorId);
                 }
-
                 PreviousLevel = SampleLevel;
-                Sector.Name = SectorName.Replace("&nbsp;", "").Trim();
-                
-                SectorList.Add(Sector);
-            };
-
+            }
             return SectorList;
         }
 
-        public static List<int> RepeatRemove(int repeatCount, List<int> List)
+        public static List<int> RepeatRemove(int repeatCount, List<int> SectorLevels)
         {
-            // Remove Sector for the previous level
-            List.RemoveAt(List.Count - 1);
+            // Remove the previous level sector
+            SectorLevels.RemoveAt(SectorLevels.Count - 1);
 
             // Remove every other Levels, if neccesary
             for (var j = 0; j < Math.Abs(repeatCount); j++)
             {
-                List.RemoveAt(List.Count - 1);
+                SectorLevels.RemoveAt(SectorLevels.Count - 1);
             }
 
-            return List;
+            return SectorLevels;
         }
     }
 }

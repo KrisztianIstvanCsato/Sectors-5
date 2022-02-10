@@ -11,7 +11,7 @@ using Sectors.Server.Data;
 namespace Sectors.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20220209135157_Initial")]
+    [Migration("20220210222600_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -72,6 +72,9 @@ namespace Sectors.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Parent")
+                        .HasColumnType("int");
+
                     b.HasKey("SectorId");
 
                     b.ToTable("SectorsDb");
@@ -80,397 +83,476 @@ namespace Sectors.Server.Migrations
                         new
                         {
                             SectorId = 1,
-                            Name = "Manufacturing"
+                            Name = "Manufacturing",
+                            Parent = 0
                         },
                         new
                         {
                             SectorId = 19,
-                            Name = "Construction materials"
+                            Name = "Construction materials",
+                            Parent = 1
                         },
                         new
                         {
                             SectorId = 18,
-                            Name = "Electronics and Optics"
+                            Name = "Electronics and Optics",
+                            Parent = 1
                         },
                         new
                         {
                             SectorId = 6,
-                            Name = "Food and Beverage"
+                            Name = "Food and Beverage",
+                            Parent = 1
                         },
                         new
                         {
                             SectorId = 342,
-                            Name = "Bakery & confectionery products"
+                            Name = "Bakery & confectionery products",
+                            Parent = 6
                         },
                         new
                         {
                             SectorId = 43,
-                            Name = "Beverages"
+                            Name = "Beverages",
+                            Parent = 6
                         },
                         new
                         {
                             SectorId = 42,
-                            Name = "Fish & fish products"
+                            Name = "Fish & fish products",
+                            Parent = 6
                         },
                         new
                         {
                             SectorId = 40,
-                            Name = "Meat & meat products"
+                            Name = "Meat & meat products",
+                            Parent = 6
                         },
                         new
                         {
                             SectorId = 39,
-                            Name = "Milk & dairy products"
+                            Name = "Milk & dairy products",
+                            Parent = 6
                         },
                         new
                         {
                             SectorId = 437,
-                            Name = "Other"
+                            Name = "Other",
+                            Parent = 6
                         },
                         new
                         {
                             SectorId = 378,
-                            Name = "Sweets & snack food"
+                            Name = "Sweets & snack food",
+                            Parent = 6
                         },
                         new
                         {
                             SectorId = 13,
-                            Name = "Furniture"
+                            Name = "Furniture",
+                            Parent = 1
                         },
                         new
                         {
                             SectorId = 389,
-                            Name = "Bathroom/sauna"
+                            Name = "Bathroom/sauna",
+                            Parent = 13
                         },
                         new
                         {
                             SectorId = 385,
-                            Name = "Bedroom"
+                            Name = "Bedroom",
+                            Parent = 13
                         },
                         new
                         {
                             SectorId = 390,
-                            Name = "Children’s room"
+                            Name = "Children’s room",
+                            Parent = 13
                         },
                         new
                         {
                             SectorId = 98,
-                            Name = "Kitchen"
+                            Name = "Kitchen",
+                            Parent = 13
                         },
                         new
                         {
                             SectorId = 101,
-                            Name = "Living room"
+                            Name = "Living room",
+                            Parent = 13
                         },
                         new
                         {
                             SectorId = 392,
-                            Name = "Office"
+                            Name = "Office",
+                            Parent = 13
                         },
                         new
                         {
                             SectorId = 394,
-                            Name = "Other (Furniture)"
+                            Name = "Other (Furniture)",
+                            Parent = 13
                         },
                         new
                         {
                             SectorId = 341,
-                            Name = "Outdoor"
+                            Name = "Outdoor",
+                            Parent = 13
                         },
                         new
                         {
                             SectorId = 99,
-                            Name = "Project furniture"
+                            Name = "Project furniture",
+                            Parent = 13
                         },
                         new
                         {
                             SectorId = 12,
-                            Name = "Machinery"
+                            Name = "Machinery",
+                            Parent = 1
                         },
                         new
                         {
                             SectorId = 94,
-                            Name = "Machinery components"
+                            Name = "Machinery components",
+                            Parent = 12
                         },
                         new
                         {
                             SectorId = 91,
-                            Name = "Machinery equipment/tools"
+                            Name = "Machinery equipment/tools",
+                            Parent = 12
                         },
                         new
                         {
                             SectorId = 224,
-                            Name = "Manufacture of machinery"
+                            Name = "Manufacture of machinery",
+                            Parent = 12
                         },
                         new
                         {
                             SectorId = 97,
-                            Name = "Maritime"
+                            Name = "Maritime",
+                            Parent = 12
                         },
                         new
                         {
                             SectorId = 271,
-                            Name = "Aluminium and steel workboats"
+                            Name = "Aluminium and steel workboats",
+                            Parent = 97
                         },
                         new
                         {
                             SectorId = 269,
-                            Name = "Boat/Yacht building"
+                            Name = "Boat/Yacht building",
+                            Parent = 97
                         },
                         new
                         {
                             SectorId = 230,
-                            Name = "Ship repair and conversion"
+                            Name = "Ship repair and conversion",
+                            Parent = 97
                         },
                         new
                         {
                             SectorId = 93,
-                            Name = "Metal structures"
+                            Name = "Metal structures",
+                            Parent = 12
                         },
                         new
                         {
                             SectorId = 508,
-                            Name = "Other"
+                            Name = "Other",
+                            Parent = 12
                         },
                         new
                         {
                             SectorId = 227,
-                            Name = "Repair and maintenance service"
+                            Name = "Repair and maintenance service",
+                            Parent = 12
                         },
                         new
                         {
                             SectorId = 11,
-                            Name = "Metalworking"
+                            Name = "Metalworking",
+                            Parent = 1
                         },
                         new
                         {
                             SectorId = 67,
-                            Name = "Construction of metal structures"
+                            Name = "Construction of metal structures",
+                            Parent = 11
                         },
                         new
                         {
                             SectorId = 263,
-                            Name = "Houses and buildings"
+                            Name = "Houses and buildings",
+                            Parent = 11
                         },
                         new
                         {
                             SectorId = 267,
-                            Name = "Metal products"
+                            Name = "Metal products",
+                            Parent = 11
                         },
                         new
                         {
                             SectorId = 542,
-                            Name = "Metal works"
+                            Name = "Metal works",
+                            Parent = 11
                         },
                         new
                         {
                             SectorId = 75,
-                            Name = "CNC-machining"
+                            Name = "CNC-machining",
+                            Parent = 542
                         },
                         new
                         {
                             SectorId = 62,
-                            Name = "Forgings, Fasteners"
+                            Name = "Forgings, Fasteners",
+                            Parent = 542
                         },
                         new
                         {
                             SectorId = 69,
-                            Name = "Gas, Plasma, Laser cutting"
+                            Name = "Gas, Plasma, Laser cutting",
+                            Parent = 542
                         },
                         new
                         {
                             SectorId = 66,
-                            Name = "MIG, TIG, Aluminum welding"
+                            Name = "MIG, TIG, Aluminum welding",
+                            Parent = 542
                         },
                         new
                         {
                             SectorId = 9,
-                            Name = "Plastic and Rubber"
+                            Name = "Plastic and Rubber",
+                            Parent = 1
                         },
                         new
                         {
                             SectorId = 54,
-                            Name = "Packaging"
+                            Name = "Packaging",
+                            Parent = 9
                         },
                         new
                         {
                             SectorId = 556,
-                            Name = "Plastic goods"
+                            Name = "Plastic goods",
+                            Parent = 9
                         },
                         new
                         {
                             SectorId = 559,
-                            Name = "Plastic processing technology"
+                            Name = "Plastic processing technology",
+                            Parent = 9
                         },
                         new
                         {
                             SectorId = 55,
-                            Name = "Blowing"
+                            Name = "Blowing",
+                            Parent = 559
                         },
                         new
                         {
                             SectorId = 57,
-                            Name = "Moulding"
+                            Name = "Moulding",
+                            Parent = 559
                         },
                         new
                         {
                             SectorId = 53,
-                            Name = "Plastics welding and processing"
+                            Name = "Plastics welding and processing",
+                            Parent = 559
                         },
                         new
                         {
                             SectorId = 560,
-                            Name = "Plastic profiles"
+                            Name = "Plastic profiles",
+                            Parent = 9
                         },
                         new
                         {
                             SectorId = 5,
-                            Name = "Printing"
+                            Name = "Printing",
+                            Parent = 1
                         },
                         new
                         {
                             SectorId = 148,
-                            Name = "Advertising"
+                            Name = "Advertising",
+                            Parent = 5
                         },
                         new
                         {
                             SectorId = 150,
-                            Name = "Book/Periodicals printing"
+                            Name = "Book/Periodicals printing",
+                            Parent = 5
                         },
                         new
                         {
                             SectorId = 145,
-                            Name = "Labelling and packaging printing"
+                            Name = "Labelling and packaging printing",
+                            Parent = 5
                         },
                         new
                         {
                             SectorId = 7,
-                            Name = "Textile and Clothing"
+                            Name = "Textile and Clothing",
+                            Parent = 1
                         },
                         new
                         {
                             SectorId = 44,
-                            Name = "Clothing"
+                            Name = "Clothing",
+                            Parent = 7
                         },
                         new
                         {
                             SectorId = 45,
-                            Name = "Textile"
+                            Name = "Textile",
+                            Parent = 7
                         },
                         new
                         {
                             SectorId = 8,
-                            Name = "Wood"
+                            Name = "Wood",
+                            Parent = 1
                         },
                         new
                         {
                             SectorId = 337,
-                            Name = "Other (Wood)"
+                            Name = "Other (Wood)",
+                            Parent = 8
                         },
                         new
                         {
                             SectorId = 51,
-                            Name = "Wooden building materials"
+                            Name = "Wooden building materials",
+                            Parent = 8
                         },
                         new
                         {
                             SectorId = 47,
-                            Name = "Wooden houses"
+                            Name = "Wooden houses",
+                            Parent = 8
                         },
                         new
                         {
                             SectorId = 3,
-                            Name = "Other"
+                            Name = "Other",
+                            Parent = 0
                         },
                         new
                         {
                             SectorId = 37,
-                            Name = "Creative industries"
+                            Name = "Creative industries",
+                            Parent = 3
                         },
                         new
                         {
                             SectorId = 29,
-                            Name = "Energy technology"
+                            Name = "Energy technology",
+                            Parent = 3
                         },
                         new
                         {
                             SectorId = 33,
-                            Name = "Environment"
+                            Name = "Environment",
+                            Parent = 3
                         },
                         new
                         {
                             SectorId = 2,
-                            Name = "Service"
+                            Name = "Service",
+                            Parent = 0
                         },
                         new
                         {
                             SectorId = 25,
-                            Name = "Business services"
+                            Name = "Business services",
+                            Parent = 2
                         },
                         new
                         {
                             SectorId = 35,
-                            Name = "Engineering"
+                            Name = "Engineering",
+                            Parent = 2
                         },
                         new
                         {
                             SectorId = 28,
-                            Name = "Information Technology and Telecommunications"
+                            Name = "Information Technology and Telecommunications",
+                            Parent = 2
                         },
                         new
                         {
                             SectorId = 581,
-                            Name = "Data processing, Web portals, E-marketing"
+                            Name = "Data processing, Web portals, E-marketing",
+                            Parent = 28
                         },
                         new
                         {
                             SectorId = 576,
-                            Name = "Programming, Consultancy"
+                            Name = "Programming, Consultancy",
+                            Parent = 28
                         },
                         new
                         {
                             SectorId = 121,
-                            Name = "Software, Hardware"
+                            Name = "Software, Hardware",
+                            Parent = 28
                         },
                         new
                         {
                             SectorId = 122,
-                            Name = "Telecommunications"
+                            Name = "Telecommunications",
+                            Parent = 28
                         },
                         new
                         {
                             SectorId = 22,
-                            Name = "Tourism"
+                            Name = "Tourism",
+                            Parent = 2
                         },
                         new
                         {
                             SectorId = 141,
-                            Name = "Translation services"
+                            Name = "Translation services",
+                            Parent = 2
                         },
                         new
                         {
                             SectorId = 21,
-                            Name = "Transport and Logistics"
+                            Name = "Transport and Logistics",
+                            Parent = 2
                         },
                         new
                         {
                             SectorId = 111,
-                            Name = "Air"
+                            Name = "Air",
+                            Parent = 21
                         },
                         new
                         {
                             SectorId = 114,
-                            Name = "Rail"
+                            Name = "Rail",
+                            Parent = 21
                         },
                         new
                         {
                             SectorId = 112,
-                            Name = "Road"
+                            Name = "Road",
+                            Parent = 21
                         },
                         new
                         {
                             SectorId = 113,
-                            Name = "Water"
+                            Name = "Water",
+                            Parent = 21
                         });
                 });
 
