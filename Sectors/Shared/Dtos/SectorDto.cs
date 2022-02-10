@@ -12,5 +12,6 @@ namespace Sectors.Shared.Dtos
         [Key]
         public int SectorId { get; set; }
         public string Name { get; set; }
+        public int Parent { get; set; }
     }
 }

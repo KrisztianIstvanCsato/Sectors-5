@@ -13,6 +13,7 @@ namespace Sectors.Shared
         [Key]
         public int SectorId { get; set; }
         public string Name { get; set; }
+        public int Parent { get; set; }
 
         //Navigation prop
         public virtual List<UserSector> Users { get; set; }

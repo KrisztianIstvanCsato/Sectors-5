@@ -1,93 +1,11 @@
-﻿using Sectors.Server.Data.Sample;
-using Sectors.Shared;
+﻿using Sectors.Shared;
+using System.Text.RegularExpressions;
 
 namespace Sectors.Server.Data
 {
-    public class SampleSectorSelector
+    public static class SampleSectorSelector
     {
-        private List<Sector> list = new List<Sector>{
-                 new Sector { SectorId = 1, Name = "Manufacturing" },
-                 new Sector { SectorId = 19, Name = "Construction materials" },
-                 new Sector { SectorId = 18, Name = "Electronics and Optics" },
-                 new Sector { SectorId = 6, Name = "Food and Beverage" },
-                 new Sector { SectorId = 342, Name = "Bakery & confectionery products" },
-                 new Sector { SectorId = 43, Name = "Beverages" },
-                 new Sector { SectorId = 42, Name = "Fish & fish products" },
-                 new Sector { SectorId = 40, Name = "Meat & meat products" },
-                 new Sector { SectorId = 39, Name = "Milk & dairy products" },
-                 new Sector { SectorId = 437, Name = "Other" },
-                 new Sector { SectorId = 378, Name = "Sweets & snack food" },
-                 new Sector { SectorId = 13, Name = "Furniture" },
-                 new Sector { SectorId = 389, Name = "Bathroom/sauna" },
-                 new Sector { SectorId = 385, Name = "Bedroom" },
-                 new Sector { SectorId = 390, Name = "Children’s room" },
-                 new Sector { SectorId = 98, Name = "Kitchen" },
-                 new Sector { SectorId = 101, Name = "Living room" },
-                 new Sector { SectorId = 392, Name = "Office" },
-                 new Sector { SectorId = 394, Name = "Other (Furniture)" },
-                 new Sector { SectorId = 341, Name = "Outdoor" },
-                 new Sector { SectorId = 99, Name = "Project furniture" },
-                 new Sector { SectorId = 12, Name = "Machinery" },
-                 new Sector { SectorId = 94, Name = "Machinery components" },
-                 new Sector { SectorId = 91, Name = "Machinery equipment/tools" },
-                 new Sector { SectorId = 224, Name = "Manufacture of machinery" },
-                 new Sector { SectorId = 97, Name = "Maritime" },
-                 new Sector { SectorId = 271, Name = "Aluminium and steel workboats" },
-                 new Sector { SectorId = 269, Name = "Boat/Yacht building" },
-                 new Sector { SectorId = 230, Name = "Ship repair and conversion" },
-                 new Sector { SectorId = 93, Name = "Metal structures" },
-                 new Sector { SectorId = 508, Name = "Other" },
-                 new Sector { SectorId = 227, Name = "Repair and maintenance service" },
-                 new Sector { SectorId = 11, Name = "Metalworking" },
-                 new Sector { SectorId = 67, Name = "Construction of metal structures" },
-                 new Sector { SectorId = 263, Name = "Houses and buildings" },
-                 new Sector { SectorId = 267, Name = "Metal products" },
-                 new Sector { SectorId = 542, Name = "Metal works" },
-                 new Sector { SectorId = 75, Name = "CNC-machining" },
-                 new Sector { SectorId = 62, Name = "Forgings, Fasteners" },
-                 new Sector { SectorId = 69, Name = "Gas, Plasma, Laser cutting" },
-                 new Sector { SectorId = 66, Name = "MIG, TIG, Aluminum welding" },
-                 new Sector { SectorId = 9, Name = "Plastic and Rubber" },
-                 new Sector { SectorId = 54, Name = "Packaging" },
-                 new Sector { SectorId = 556, Name = "Plastic goods" },
-                 new Sector { SectorId = 559, Name = "Plastic processing technology" },
-                 new Sector { SectorId = 55, Name = "Blowing" },
-                 new Sector { SectorId = 57, Name = "Moulding" },
-                 new Sector { SectorId = 53, Name = "Plastics welding and processing" },
-                 new Sector { SectorId = 560, Name = "Plastic profiles" },
-                 new Sector { SectorId = 5, Name = "Printing" },
-                 new Sector { SectorId = 148, Name = "Advertising" },
-                 new Sector { SectorId = 150, Name = "Book/Periodicals printing" },
-                 new Sector { SectorId = 145, Name = "Labelling and packaging printing" },
-                 new Sector { SectorId = 7, Name = "Textile and Clothing" },
-                 new Sector { SectorId = 44, Name = "Clothing" },
-                 new Sector { SectorId = 45, Name = "Textile" },
-                 new Sector { SectorId = 8, Name = "Wood" },
-                 new Sector { SectorId = 337, Name = "Other (Wood)" },
-                 new Sector { SectorId = 51, Name = "Wooden building materials" },
-                 new Sector { SectorId = 47, Name = "Wooden houses" },
-                 new Sector { SectorId = 3, Name = "Other" },
-                 new Sector { SectorId = 37, Name = "Creative industries" },
-                 new Sector { SectorId = 29, Name = "Energy technology" },
-                 new Sector { SectorId = 33, Name = "Environment" },
-                 new Sector { SectorId = 2, Name = "Service" },
-                 new Sector { SectorId = 25, Name = "Business services" },
-                 new Sector { SectorId = 35, Name = "Engineering" },
-                 new Sector { SectorId = 28, Name = "Information Technology and Telecommunications" },
-                 new Sector { SectorId = 581, Name = "Data processing, Web portals, E-marketing" },
-                 new Sector { SectorId = 576, Name = "Programming, Consultancy" },
-                 new Sector { SectorId = 121, Name = "Software, Hardware" },
-                 new Sector { SectorId = 122, Name = "Telecommunications" },
-                 new Sector { SectorId = 22, Name = "Tourism" },
-                 new Sector { SectorId = 141, Name = "Translation services" },
-                 new Sector { SectorId = 21, Name = "Transport and Logistics" },
-                 new Sector { SectorId = 111, Name = "Air" },
-                 new Sector { SectorId = 114, Name = "Rail" },
-                 new Sector { SectorId = 112, Name = "Road" },
-                 new Sector { SectorId = 113, Name = "Water" }
-        };
-
-        private readonly string _sampleString = @"
+        private static readonly string _sectorSampleString = @"
     <option value=1>
       Manufacturing
     </option>
@@ -326,39 +244,95 @@ namespace Sectors.Server.Data
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Water
     </option>";
 
-        public List<SectorValueModel> ProcessSample()
+        // This monster function... I mean baby angel is extracting the hierarchy of the sector objects
+        // for the dropdown from the relevant part of the html file I was provided with.
+        // Please, go easy on me, cos it's ugly as hell, difficult to maintain and a "bit" over-engineered.
+        // I have experimented with HTMLAgilityPack and Regex, but I didn't get the desired result,
+        // so I've decided to sculpt this masterpiece. Sorry about that.
+        // On this way I make sure the lines are not taken out of context.
+        // In case you happened to know some proven tool to do this an elegant way, pretty please, enlighten me!
+
+        public static List<Sector> ProcessSample()
         {
-            var processedSample = _sampleString;
-            List<SectorValueModel> sectorValueModels = new();
+            var processedSample = _sectorSampleString;
+            List<Sector> SectorList = new();
 
-            processedSample = processedSample.Replace(@"</option>
-    < option value = ", ",");
-            processedSample = processedSample.Replace("<option value=", "");
-            processedSample = processedSample.Replace("</option>", "");
-            
-            var sampleArray = processedSample.Split(",");
-            
-            foreach(var item in sampleArray)
+            processedSample = processedSample
+                .Replace("<option value=", "")
+                .Replace(@"</option>", ",,");
+            processedSample = processedSample.Substring(0, processedSample.LastIndexOf(",,"));
+            processedSample = Regex.Replace(processedSample, @"\n|\r", "");
+
+            var sampleArray = processedSample.Split(",,");
+            var PreviousLevel = 0; // Records closest relative position on the tree
+
+            var SectorLevels = new List<int>();
+
+            for(var i = 0; i < sampleArray.Length; i++)
             {
-                var itemPartsArray = item.Split("<");
-                var sectorId = itemPartsArray[0];
-                var indentationSplit = itemPartsArray[1].Split("nbsp;");
-                var indentationCount = indentationSplit.Length;
-                var indentationNumber = indentationCount.Equals(1) ? 0 : indentationCount - 1;
-                var sectorName = indentationCount.Equals(1) ? indentationSplit[0] : indentationSplit[indentationCount - 1];
-                var sectorParent =
+                var Sector = new Sector();
+                var sampleSplitArray = sampleArray[i].Split(">");
 
-                new SectorValueModel
+                Sector.SectorId = Int32.Parse(sampleSplitArray[0].Trim());
+
+                var SectorName = sampleSplitArray[1].Trim();
+
+                var SampleLevel = (int)Math.Round(((SectorName.Split("&nbsp;").Length - 1) / 4m)); // 
+
+                var Level = SampleLevel - PreviousLevel;
+
+                if (Level > 0)
                 {
-                    //SectorId = Int32.Parse(itemPartsArray[0]),
-                    //Name = sectorName,
-                    //Indentation = indentationNumber,
-                    //SectorParent = 
-                };
-                //sectorValueModels.Add
+                    Sector.Parent = SectorLevels.Last();
+                    SectorLevels.Add(Sector.SectorId);
+                }
+                else if (Level < 0)
+                {
+                    SectorLevels = RepeatRemove(Level, SectorLevels);
+
+                    if (!SectorLevels.Count.Equals(0)) // Otherwise root sector (Parent = 0)
+                    {
+                        Sector.Parent = SectorLevels.Last();
+                    }
+
+                    SectorLevels.Add(Sector.SectorId);
+                }
+                else
+                {
+                    if (SectorLevels.Count > 0) // Otherwise root sector
+                    {
+                        SectorLevels.RemoveAt(SectorLevels.Count - 1);
+                    }
+
+                    if (SectorLevels.Count > 0) //Otherwise root sector
+                    {
+                        Sector.Parent = SectorLevels.Last();
+                    }
+
+                    SectorLevels.Add(Sector.SectorId);
+                }
+
+                PreviousLevel = SampleLevel;
+                Sector.Name = SectorName.Replace("&nbsp;", "").Trim();
+                
+                SectorList.Add(Sector);
             };
 
-            return sectorValueModels;
+            return SectorList;
+        }
+
+        public static List<int> RepeatRemove(int repeatCount, List<int> List)
+        {
+            // Remove Sector for the previous level
+            List.RemoveAt(List.Count - 1);
+
+            // Remove every other Levels, if neccesary
+            for (var j = 0; j < Math.Abs(repeatCount); j++)
+            {
+                List.RemoveAt(List.Count - 1);
+            }
+
+            return List;
         }
     }
 }
