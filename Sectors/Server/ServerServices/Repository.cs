@@ -15,7 +15,7 @@ namespace Sectors.Server.Services
         private readonly DataContext _dataContext;
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
-        public Repository(DataContext context, 
+        public Repository(DataContext context,
             ILogger<Repository> logger, IMapper mapper)
         {
             _dataContext = context;
@@ -92,11 +92,13 @@ namespace Sectors.Server.Services
         {
             _logger.LogInformation($"Creating user in service: {UserDto.Name}");
 
-            Add(_mapper.Map<User>(UserDto));
+            var User = _mapper.Map<User>(UserDto);
+
+            Add(User);
 
             await Save();
 
-            return UserDto;
+            return _mapper.Map<UserDto>(User);
         }
 
         public async Task<UserDto> UpdateUser(string InputName, UserDto UserDto)

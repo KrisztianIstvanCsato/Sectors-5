@@ -15,37 +15,37 @@
 <br>
 <EditForm Model="CurrentUser" OnInvalidSubmit="HandleSubmit">
     <DataAnnotationsValidator />
-<table>
-    <tbody>
-        <tr>
-            <td>
-                <div>
-                    <label>Name</label>
-                    <InputText name="name" @bind-Value="CurrentUser.Name"></InputText>
-                    <ValidationMessage For=@(() => CurrentUser.Name) />
-                    <br>
-                </div>
-            </td>
-            <td>
-                <button type="button" class="btn btn-danger" @onclick="@(e => SearchUser(CurrentUser.Name))">Search</button>
-                <button type="button" class="btn btn-warning" @onclick="ClearForm">Clear</button>
-            </td>
-        </tr>
-     </tbody>
-  </table>
+    <table>
+        <tbody>
+            <tr>
+                <td>
+                    <div>
+                        <label>Name</label>
+                        <InputText name="name" @bind-Value="CurrentUser.Name"></InputText>
+                        <ValidationMessage For=@(() => CurrentUser.Name) />
+                        <br>
+                    </div>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger" @onclick="@(e => SearchUser(CurrentUser.Name))">Search</button>
+                    <button type="button" class="btn btn-warning" @onclick="ClearForm">Clear</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 
-  <br>
+    <br>
 
     @if (SectorList == null)
     {
         @if (Loading)
         {
-           <p><em>Loading...</em></p>
+            <p><em>Loading...</em></p>
         }
     }
     else
     {
-        @if (CurrentUser.UserId.Equals(0))
+        @if (CurrentUser.UserId.Equals(0) && ShowTitle)
         {
             <CreateUserTitle></CreateUserTitle>
         }
@@ -54,21 +54,25 @@
             <EditUserTitle></EditUserTitle>
         }
         <br>
-        <SelectList Items="SectorList" @bind-SelectedItems="SelectedSectors" Context="sector">
-            <ItemTemplate>
-                @sector.Name
-            </ItemTemplate>
-        </SelectList>
-    <hr />
-    <br>
-    <InputCheckbox name="agreement" @bind-Value=CurrentUser.Agreed></InputCheckbox>
-    <ValidationMessage For=@(() => CurrentUser.Agreed) />
-    <label for="agreement">Agree to terms</label>
-    <br>
-    <br>
-    <button @onclick="HandleSubmit" name="submit" type="submit">Submit</button>
-    <br>
-    <br>
+        @foreach (var Sector in SectorList)
+        {
+            <SelectList Item="Sector" ItemId="Sector.SectorId"
+                @bind-SelectedItems="SelectedSectors" Context="sector">
+                <ItemTemplate>
+                    @sector.Name
+                </ItemTemplate>
+            </SelectList>
+        }
+        <hr />
+        <br>
+        <InputCheckbox name="agreement" @bind-Value=CurrentUser.Agreed></InputCheckbox>
+        <ValidationMessage For=@(() => CurrentUser.Agreed) />
+        <label for="agreement">Agree to terms</label>
+        <br>
+        <br>
+        <button @onclick="HandleSubmit" name="submit" type="submit">Submit</button>
+        <br>
+        <br>
     }
 </EditForm>
 
@@ -81,6 +85,7 @@
     private List<SectorDto> HiddenSectors;
     public UserDto CurrentUser { get; set; } = new();
     bool Loading = false;
+    bool ShowTitle = true;
 
     protected override async void OnInitialized()
     {
@@ -122,14 +127,16 @@
         if (CurrentUser.Name != null && CurrentUser.Name.Trim().Length > 0)
         {
             var IsNameAllowed = true;
-            if(!UserNameInput.Equals(CurrentUser.Name))
+            if (!UserNameInput.Equals(CurrentUser.Name))
             {
                 IsNameAllowed = await ApiService.FindNameInUse(CurrentUser.Name);
             }
 
-            if(IsNameAllowed)
+            if (IsNameAllowed)
             {
+                ShowTitle = false;
                 CurrentUser = await ApiService.UserOperation(UserNameInput, CurrentUser, SelectedSectors);
+                ShowTitle = true;
             }
         }
     }
