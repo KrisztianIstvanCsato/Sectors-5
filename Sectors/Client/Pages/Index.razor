@@ -23,7 +23,6 @@
                     <div>
                         <label for="Name">Name</label>
                         <InputText id="Name" @bind-Value="CurrentUser.Name"></InputText>
-                        <ValidationMessage For=@(() => CurrentUser.Name) />
                         <br>
                     </div>
                 </td>
@@ -32,6 +31,7 @@
                     <button type="button" class="btn btn-warning" @onclick="ClearForm">Clear</button>
                 </td>
             </tr>
+            <ValidationMessage For=@(() => CurrentUser.Name) />
         </tbody>
     </table>
 
@@ -54,23 +54,9 @@
         {
             <EditUserTitle></EditUserTitle>
         }
-        <br>
-        @foreach (var Sector in SectorList)
-        {
-            <SelectList Item="Sector" ItemId="Sector.SectorId"
-                @bind-SelectedItems="SelectedSectors" Context="sector">
-                <ItemTemplate>
-                    @for(var i = 0; i < (Sector.Level * 4); i++)
-                    {
-                        @:&nbsp;
-                    }
-                    @Sector.Name
-                </ItemTemplate>
-            </SelectList>
-            <ValidationMessage For=@(() => CurrentUser.Agreed) />
-        }
-        <hr />
-        <br>
+
+        <DropdownComponent InputList="SectorList" SelectedList="SelectedSectors" User="CurrentUser"></DropdownComponent>
+        
         <InputCheckbox name="agreement" @bind-Value=CurrentUser.Agreed></InputCheckbox>
         <ValidationMessage For=@(() => CurrentUser.Agreed) />
         <label for="agreement">Agree to terms</label>
@@ -85,11 +71,10 @@
 @code {
     public List<SectorDto> SelectedSectors { get; set; }
     private List<SectorDto> SectorList;
-    public EventCallback<List<SectorDto>> SelectedSectorsChanged { get; set; }
+    public UserDto CurrentUser { get; set; } = new();
 
     private string NameInput = string.Empty;
     private List<SectorDto> HiddenSectors;
-    public UserDto CurrentUser { get; set; } = new();
     bool Loading = false;
     bool ShowTitle = true;
 
@@ -117,7 +102,7 @@
             CurrentUser.Name = nameInput;
             NameInput = nameInput;
 
-            SelectedSectors = AddMarkedSectors(CurrentUser, HiddenSectors);
+            SelectedSectors = SelectingSectors(CurrentUser, HiddenSectors);
 
             Loading = false;
             SectorList = HiddenSectors;
@@ -143,7 +128,7 @@
         }
     }
 
-    private List<SectorDto> AddMarkedSectors(UserDto userDto, List<SectorDto> sectorDto)
+    private List<SectorDto> SelectingSectors(UserDto userDto, List<SectorDto> sectorDto)
     {
         if (!userDto.UserId.Equals(0))
         {

@@ -1,0 +1,29 @@
+@using Sectors.Shared.Dtos
+
+<br>
+@foreach (var Sector in InputList)
+{
+    <SelectList Item="Sector" ItemId="Sector.SectorId"
+            @bind-SelectedItems="SelectedList" Context="sector">
+        <ItemTemplate>
+            @for (var i = 0; i < (Sector.Level * 4); i++)
+            {
+                @:&nbsp;
+            }
+            @Sector.Name
+        </ItemTemplate>
+    </SelectList>
+    <ValidationMessage For=@(() => User.Agreed) />
+}
+<hr />
+<br>
+
+@code {
+    [Parameter]
+    public List<SectorDto> InputList { get; set; }
+    [Parameter]
+    public List<SectorDto> SelectedList { get; set; }
+    [Parameter]
+    public UserDto User { get; set; } = new();
+    public EventCallback<List<SectorDto>> SelectedSectorsChanged { get; set; }
+}
