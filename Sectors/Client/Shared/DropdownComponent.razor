@@ -1,6 +1,8 @@
 @using Sectors.Shared.Dtos
 
 <br>
+
+<div class=modal-dialog-scrollable>
 @foreach (var Sector in InputList)
 {
     <SelectList Item="Sector" ItemId="Sector.SectorId"
@@ -15,6 +17,7 @@
     </SelectList>
     <ValidationMessage For=@(() => User.Agreed) />
 }
+</div>
 <hr />
 <br>
 

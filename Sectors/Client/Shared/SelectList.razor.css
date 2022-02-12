@@ -7,8 +7,9 @@
     .container .label_item {
         display: table-row;
         position: relative;
-        width: 275px;
+        width: max-content;
         height: auto;
+        padding-right:5em;
     }
 
         .container .label_item .checkbox {
@@ -28,6 +29,7 @@
     color: #585c68;
     display: block;
     position: relative;
+    width: max-content;
 }
 
     .label_item .option_inner .name {
