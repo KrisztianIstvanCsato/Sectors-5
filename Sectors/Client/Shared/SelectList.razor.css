@@ -7,9 +7,8 @@
     .container .label_item {
         display: table-row;
         position: relative;
-        width: max-content;
+        width: 100%;
         height: auto;
-        padding-right:2em;
     }
 
         .container .label_item .checkbox {
@@ -38,5 +37,6 @@
 
 .label_item .checkbox:checked ~ .option_inner {
     background-color: blue;
+    width: auto;
     color: #fff;
 }
