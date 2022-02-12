@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using System.ComponentModel.DataAnnotations
+@using Sectors.Server.Data
 @using Sectors.Shared.Dtos;
 
 @inject IApiService ApiService
@@ -9,46 +10,43 @@
 <PageTitle>Sectors</PageTitle>
 
 <h1>Sectors</h1>
-
+<br>
 <label name="call_for_action">Please enter your name and pick the Sectors you are currently involved in.</label>
-
+<br>
+<br>
 <EditForm Model="CurrentUser" OnInvalidSubmit="HandleSubmit">
     <DataAnnotationsValidator />
-<table>
-    <tbody>
-        <tr>
-        <td>
-            <div>
-                <label>Name</label>
-                <InputText name="name" @bind-Value="CurrentUser.Name"></InputText>
-                <ValidationMessage For=@(() => CurrentUser.Name) />
-                <br>
-            </div>
-        </td>
-        <td>
-            <button type="button" class="btn btn-danger" @onclick="@(e => SearchUser(CurrentUser.Name))">Search user</button>
-        </td>
-        </tr>
-     </tbody>
-  </table>
+    <table>
+        <tbody>
+            <tr>
+                <td>
+                    <div>
+                        <label for="Name">Name</label>
+                        <InputText id="Name" @bind-Value="CurrentUser.Name"></InputText>
+                        <br>
+                    </div>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger" @onclick="@(e => SearchUser(CurrentUser.Name))">Search</button>
+                    <button type="button" class="btn btn-warning" @onclick="ClearForm">Clear</button>
+                </td>
+            </tr>
+            <ValidationMessage For=@(() => CurrentUser.Name) />
+        </tbody>
+    </table>
 
-  <br>
+    <br>
 
     @if (SectorList == null)
     {
-        @if (Loading == false)
-       {
-           
-       }
-        else
+        @if (Loading)
         {
             <p><em>Loading...</em></p>
         }
     }
     else
     {
-        
-        @if (@*CurrentUser.Id.Equals(0)*@ true)
+        @if (CurrentUser.UserId.Equals(0) && ShowTitle)
         {
             <CreateUserTitle></CreateUserTitle>
         }
@@ -56,45 +54,33 @@
         {
             <EditUserTitle></EditUserTitle>
         }
+
+        <DropdownComponent InputList="SectorList" SelectedList="SelectedSectors" User="CurrentUser"></DropdownComponent>
+        
+        <AgreementComponent User="CurrentUser"></AgreementComponent>
+        
         <br>
-        <SelectList Items="SectorList" @bind-SelectedItems="SelectedSectors" Context="sector">
-            <ItemTemplate>
-                @sector.Name
-            </ItemTemplate>
-        </SelectList>
-
-    <hr />
-
-    <ul>
-        @foreach (var item in SelectedSectors)
-        {
-            <li>@item.SectorId : @item.Name</li>
-        }
-    </ul>
-    <br>
-    <p>CurrentUser empty: @CurrentUser.Agreed.Equals(null)</p>
-    <br>
-    <br>
-    <InputCheckbox name="agreement" @bind-Value=CurrentUser.Agreed></InputCheckbox>
-    <ValidationMessage For=@(() => CurrentUser.Agreed) />
-    <label for="agreement">Agree to terms</label>
-    <br>
-    <br>
-    <button @onclick="HandleSubmit" name="submit" type="submit">Submit</button>
+        <ValidationSummary />
+        <br>
+        <button @onclick="HandleSubmit" name="submit" type="submit">Submit</button>
+        <br>
+        <br>
     }
 </EditForm>
 
 @code {
-    public List<SectorDto> SelectedSectors { get; set; } = new();
+    public List<SectorDto> SelectedSectors { get; set; }
     private List<SectorDto> SectorList;
-    private List<SectorDto> sectors;
     public UserDto CurrentUser { get; set; } = new();
-    public EventCallback<List<SectorDto>> SelectedSectorsChanged { get; set; }
+
+    private string NameInput = string.Empty;
+    private List<SectorDto> HiddenSectors;
     bool Loading = false;
+    bool ShowTitle = true;
 
     protected override async void OnInitialized()
     {
-        sectors = await ApiService.GetSectors();
+        HiddenSectors = await ApiService.GetSectors();
     }
 
     private void ClearForm()
@@ -108,36 +94,47 @@
     {
         ClearForm();
 
-        if (nameInput.Length > 0)
+        if (nameInput != null && nameInput.Trim().Length > 0)
         {
             Loading = true;
 
             CurrentUser = await ApiService.GetUserByName(nameInput);
             CurrentUser.Name = nameInput;
+            NameInput = nameInput;
 
-            if (!CurrentUser.Sectors.Count.Equals(0))
-            {
-                foreach (var sectorId in CurrentUser.Sectors.Select(s => s.SectorId))
-                {
-                    SelectedSectors.Add(sectors.Where(i => i.SectorId == sectorId).FirstOrDefault());
-                }
-            }
+            SelectedSectors = SelectingSectors(CurrentUser, HiddenSectors);
 
             Loading = false;
-            SectorList = sectors;
+            SectorList = HiddenSectors;
         }
     }
 
     async void HandleSubmit()
     {
-        CurrentUser.CurrentSelectedSectorIds = SelectedSectors.Select(ss => ss.SectorId).ToArray();
-        if (CurrentUser.Sectors.Count.Equals(0))
+        if (CurrentUser.Name != null && CurrentUser.Name.Trim().Length > 0)
         {
-            await ApiService.CreateUser(CurrentUser);
+            var IsNameAllowed = true;
+            if (!NameInput.Equals(CurrentUser.Name))
+            {
+                IsNameAllowed = await ApiService.FindNameInUse(CurrentUser.Name);
+            }
+
+            if (IsNameAllowed)
+            {
+                ShowTitle = false;
+                CurrentUser = await ApiService.UserOperation(NameInput, CurrentUser, SelectedSectors);
+                ShowTitle = true;
+            }
         }
-        //else
-        //{
-        //    await ApiService.UpdateUser(CurrentUser, SelectedSectors);
-        //}
+    }
+
+    private List<SectorDto> SelectingSectors(UserDto userDto, List<SectorDto> sectorDto)
+    {
+        if (!userDto.UserId.Equals(0))
+        {
+            var SelectedSectorIds = userDto.Sectors.Select(cs => cs.SectorId).ToList();
+            return sectorDto.Where(hs => SelectedSectorIds.Contains(hs.SectorId)).ToList();
+        }
+        return new List<SectorDto>();
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Sectors.Server.Interfaces;
 using Sectors.Server.Services;
+using Sectors.Shared;
 using Sectors.Shared.Dtos;
 
 namespace Sectors.Server.Controllers
@@ -19,13 +20,11 @@ namespace Sectors.Server.Controllers
         }
 
         [HttpGet("sectors")]
-        public async Task<IActionResult> GetSectors()
+        public async Task<IActionResult> GetSectorDtos()
         {
             try
             {
-                var result  = await _repositoryService.GetSectors();
-
-                return Ok(result);
+                return Ok(await _repositoryService.GetSectorDtos());
             }
             catch (Exception ex)
             {
@@ -33,33 +32,12 @@ namespace Sectors.Server.Controllers
             }
         }
 
-        //[HttpGet("usersector/{userName}")]
-        //public async Task<IActionResult> GetRelatedSectorIdByUserId(string userName)
-        //{
-        //    try
-        //    {
-        //        var result = await _repositoryService.GetSectorIdCollectionByUserName(userName);
-                
-        //        if (result == null)
-        //            return NotFound();
-
-        //        return Ok(result);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return this.StatusCode(StatusCodes.Status500InternalServerError, $"Database Failure(GetRelatedSectorIdByUserId): {ex.Message}");
-        //    }
-        //}
-
         [HttpGet("{userName}")]
-        public async Task<ActionResult<UserDto>> GetSingleUser(string userName)
+        public async Task<ActionResult<UserDto>> GetUserDtoByName(string UserName)
         {
             try
             {
-                var result = await _repositoryService.GetUserByName(userName);
-
-                if (result == null) return new UserDto();
-                return Ok(result);
+                return Ok(await _repositoryService.GetUserDtoByName(UserName));
             }
             catch (Exception ex)
             {
@@ -68,31 +46,31 @@ namespace Sectors.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<UserDto>> CreateSingleUser(UserDto user)
+        public async Task<ActionResult<UserDto>> CreateUser(UserDto User)
         {
             try
             {
-                await _repositoryService.CreateUser(user);
+                return await _repositoryService.CreateUser(User);
             }
             catch (Exception ex)
             {
                 return this.StatusCode(StatusCodes.Status500InternalServerError, $"Database Failure(CreateSingleUser): {ex.Message}");
             }
-            return BadRequest($"Posting user {user.Name} failed");
+            return BadRequest($"Posting user {User.Name} failed");
         }
 
-        //[HttpPost("/api/sector/userSector")]
-        //public async Task<ActionResult<UserSectorDto[]>> CreateUserSectorSelection(List<UserSectorDto> userSectors)
-        //{
-        //    try
-        //    {
-        //        await _repositoryService.CreateUserSectorSelection(userSectors);
-        //    }
-        //    catch(Exception ex)
-        //    {
-        //        return this.StatusCode(StatusCodes.Status500InternalServerError, $"Database Failure(CreateUserSectorSelection): {ex.Message}");
-        //    }
-        //    return BadRequest($"Posting user-sector selection failed");
-        //}
+        [HttpPut("{InputName}")]
+        public async Task<ActionResult<UserDto>> UpdateUser(string InputName, UserDto UserDto)
+        {
+            try
+            {
+                return await _repositoryService.UpdateUser(InputName, UserDto);
+            }
+            catch (Exception ex)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, $"Database Failure(CreateSingleUser): {ex.Message}");
+            }
+            return BadRequest($"Posting user {InputName} failed");
+        }
     }
 }

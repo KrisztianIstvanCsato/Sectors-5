@@ -3,30 +3,30 @@
 
 <div class="container">
 
-        @foreach (var item in Items)
-        {
-            var id = Guid.NewGuid();
-            <label class="label_item" for="@id">
-           @if(SelectedItems.Contains(item))
-           {
-                <input class="checkbox" checked id="@id" type="checkbox" @onchange="_ => HandleChange(item)" />
-            }
-            else
-            {
-                <input class="checkbox" id="@id" type="checkbox" @onchange="_ => HandleChange(item)" />
-            }
 
-              <div class="option_inner">
-                <div class="name">@ItemTemplate(item)</div>
-              </div>
-            </label>
+    <label class="label_item" for="@ItemId">
+        @if (SelectedItems.Contains(Item))
+        {
+            <input class="checkbox" checked id="@ItemId" type="checkbox" @onchange="_ => HandleChange(Item)" />
         }
+        else
+        {
+            <input class="checkbox" id="@ItemId" type="checkbox" @onchange="_ => HandleChange(Item)" />
+        }
+
+        <span class="option_inner">
+            <span class="name">@ItemTemplate(Item)</span>
+        </span>
+    </label>
 </div>
 
 @code {
 
     [Parameter]
-    public IEnumerable<TItem> Items { get; set; }
+    public TItem Item { get; set; }
+
+    [Parameter]
+    public int ItemId { get; set; }
 
     [Parameter]
     public RenderFragment<TItem> ItemTemplate { get; set; }

@@ -1,0 +1,7 @@
+﻿
+.modal-dialog-scrollable {
+    width: auto;
+    border: thin #000 solid;
+    overflow: scroll;
+    height: 400px;
+}

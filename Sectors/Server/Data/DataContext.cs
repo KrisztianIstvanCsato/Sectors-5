@@ -46,7 +46,6 @@ namespace Sectors.Server.Data
         }
 
         public DbSet<User> UsersDb { get; set; }
-
         public DbSet<Sector> SectorsDb { get; set; }
         public DbSet<UserSector> UserSectorsDb { get; set; }
     }

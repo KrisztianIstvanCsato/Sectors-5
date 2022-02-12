@@ -16,13 +16,15 @@ namespace Sectors.Shared.Dtos
         }
 
         [Key]
+        public int UserId { get; set; }
+
+        [Required(ErrorMessage = "Enter a name")]
+        [MinLength(3, ErrorMessage = "The name is too short")]
+        [StringLength(50, ErrorMessage = "The name is too long")]
         public string Name { get; set; }
 
-        //[Required(ErrorMessage = "Your agreement is required")]
+        [Required(ErrorMessage = "Your agreement is required")]
         public bool Agreed { get; set; }
-        public List<UserSectorDto> Sectors { get; set; }
-
-        [NotMapped]
-        public int[] CurrentSelectedSectorIds { get; set; }
+        public virtual List<UserSectorDto> Sectors { get; set; }
     }
 }
