@@ -1,0 +1,12 @@
+@using Sectors.Shared.Dtos
+
+<InputCheckbox name="agreement" @bind-Value=User.Agreed></InputCheckbox>
+<ValidationMessage For=@(() => User.Agreed) />
+<label for="agreement">Agree to terms</label>
+<br>
+
+@code
+{
+    [Parameter]
+    public UserDto User { get; set; }
+}

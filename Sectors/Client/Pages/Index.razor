@@ -57,10 +57,8 @@
 
         <DropdownComponent InputList="SectorList" SelectedList="SelectedSectors" User="CurrentUser"></DropdownComponent>
         
-        <InputCheckbox name="agreement" @bind-Value=CurrentUser.Agreed></InputCheckbox>
-        <ValidationMessage For=@(() => CurrentUser.Agreed) />
-        <label for="agreement">Agree to terms</label>
-        <br>
+        <AgreementComponent User="CurrentUser"></AgreementComponent>
+        
         <br>
         <button @onclick="HandleSubmit" name="submit" type="submit">Submit</button>
         <br>
