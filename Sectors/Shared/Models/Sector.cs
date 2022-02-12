@@ -14,6 +14,7 @@ namespace Sectors.Shared
         public int SectorId { get; set; }
         public string Name { get; set; }
         public int Parent { get; set; }
+        public int Level { get; set; }
 
         //Navigation prop
         public virtual List<UserSector> Users { get; set; }

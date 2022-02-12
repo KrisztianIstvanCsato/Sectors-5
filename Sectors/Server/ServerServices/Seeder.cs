@@ -7,8 +7,6 @@ namespace Sectors.Server.Services
 {
     public class Seeder : ISeeder
     {
-        private List<Sector> _sectors = SampleSectorSelector.ProcessSample();
-
         private List<User> _userDtos = new List<User>
         {
             new User { UserId = 1, Name = "TestPerson1", Agreed = true },
@@ -25,7 +23,8 @@ namespace Sectors.Server.Services
 
         public List<Sector> GetSectors()
         {
-            return _sectors;
+            var _sectors = new SampleSectorSelector();
+            return _sectors.ProcessSample();
         }
 
         public List<User> GetUsers()

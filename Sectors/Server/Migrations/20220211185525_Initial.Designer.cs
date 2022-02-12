@@ -11,7 +11,7 @@ using Sectors.Server.Data;
 namespace Sectors.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20220210222600_Initial")]
+    [Migration("20220211185525_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -68,6 +68,9 @@ namespace Sectors.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SectorId"), 1L, 1);
 
+                    b.Property<int>("Level")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -83,474 +86,553 @@ namespace Sectors.Server.Migrations
                         new
                         {
                             SectorId = 1,
+                            Level = 0,
                             Name = "Manufacturing",
                             Parent = 0
                         },
                         new
                         {
                             SectorId = 19,
+                            Level = 1,
                             Name = "Construction materials",
                             Parent = 1
                         },
                         new
                         {
                             SectorId = 18,
+                            Level = 1,
                             Name = "Electronics and Optics",
                             Parent = 1
                         },
                         new
                         {
                             SectorId = 6,
+                            Level = 1,
                             Name = "Food and Beverage",
                             Parent = 1
                         },
                         new
                         {
                             SectorId = 342,
+                            Level = 2,
                             Name = "Bakery & confectionery products",
                             Parent = 6
                         },
                         new
                         {
                             SectorId = 43,
+                            Level = 2,
                             Name = "Beverages",
                             Parent = 6
                         },
                         new
                         {
                             SectorId = 42,
+                            Level = 2,
                             Name = "Fish & fish products",
                             Parent = 6
                         },
                         new
                         {
                             SectorId = 40,
+                            Level = 2,
                             Name = "Meat & meat products",
                             Parent = 6
                         },
                         new
                         {
                             SectorId = 39,
+                            Level = 2,
                             Name = "Milk & dairy products",
                             Parent = 6
                         },
                         new
                         {
                             SectorId = 437,
+                            Level = 2,
                             Name = "Other",
                             Parent = 6
                         },
                         new
                         {
                             SectorId = 378,
+                            Level = 2,
                             Name = "Sweets & snack food",
                             Parent = 6
                         },
                         new
                         {
                             SectorId = 13,
+                            Level = 1,
                             Name = "Furniture",
                             Parent = 1
                         },
                         new
                         {
                             SectorId = 389,
+                            Level = 2,
                             Name = "Bathroom/sauna",
                             Parent = 13
                         },
                         new
                         {
                             SectorId = 385,
+                            Level = 2,
                             Name = "Bedroom",
                             Parent = 13
                         },
                         new
                         {
                             SectorId = 390,
+                            Level = 2,
                             Name = "Children’s room",
                             Parent = 13
                         },
                         new
                         {
                             SectorId = 98,
+                            Level = 2,
                             Name = "Kitchen",
                             Parent = 13
                         },
                         new
                         {
                             SectorId = 101,
+                            Level = 2,
                             Name = "Living room",
                             Parent = 13
                         },
                         new
                         {
                             SectorId = 392,
+                            Level = 2,
                             Name = "Office",
                             Parent = 13
                         },
                         new
                         {
                             SectorId = 394,
+                            Level = 2,
                             Name = "Other (Furniture)",
                             Parent = 13
                         },
                         new
                         {
                             SectorId = 341,
+                            Level = 2,
                             Name = "Outdoor",
                             Parent = 13
                         },
                         new
                         {
                             SectorId = 99,
+                            Level = 2,
                             Name = "Project furniture",
                             Parent = 13
                         },
                         new
                         {
                             SectorId = 12,
+                            Level = 1,
                             Name = "Machinery",
                             Parent = 1
                         },
                         new
                         {
                             SectorId = 94,
+                            Level = 2,
                             Name = "Machinery components",
                             Parent = 12
                         },
                         new
                         {
                             SectorId = 91,
+                            Level = 2,
                             Name = "Machinery equipment/tools",
                             Parent = 12
                         },
                         new
                         {
                             SectorId = 224,
+                            Level = 2,
                             Name = "Manufacture of machinery",
                             Parent = 12
                         },
                         new
                         {
                             SectorId = 97,
+                            Level = 2,
                             Name = "Maritime",
                             Parent = 12
                         },
                         new
                         {
                             SectorId = 271,
+                            Level = 3,
                             Name = "Aluminium and steel workboats",
                             Parent = 97
                         },
                         new
                         {
                             SectorId = 269,
+                            Level = 3,
                             Name = "Boat/Yacht building",
                             Parent = 97
                         },
                         new
                         {
                             SectorId = 230,
+                            Level = 3,
                             Name = "Ship repair and conversion",
                             Parent = 97
                         },
                         new
                         {
                             SectorId = 93,
+                            Level = 2,
                             Name = "Metal structures",
                             Parent = 12
                         },
                         new
                         {
                             SectorId = 508,
+                            Level = 2,
                             Name = "Other",
                             Parent = 12
                         },
                         new
                         {
                             SectorId = 227,
+                            Level = 2,
                             Name = "Repair and maintenance service",
                             Parent = 12
                         },
                         new
                         {
                             SectorId = 11,
+                            Level = 1,
                             Name = "Metalworking",
                             Parent = 1
                         },
                         new
                         {
                             SectorId = 67,
+                            Level = 2,
                             Name = "Construction of metal structures",
                             Parent = 11
                         },
                         new
                         {
                             SectorId = 263,
+                            Level = 2,
                             Name = "Houses and buildings",
                             Parent = 11
                         },
                         new
                         {
                             SectorId = 267,
+                            Level = 2,
                             Name = "Metal products",
                             Parent = 11
                         },
                         new
                         {
                             SectorId = 542,
+                            Level = 2,
                             Name = "Metal works",
                             Parent = 11
                         },
                         new
                         {
                             SectorId = 75,
+                            Level = 3,
                             Name = "CNC-machining",
                             Parent = 542
                         },
                         new
                         {
                             SectorId = 62,
+                            Level = 3,
                             Name = "Forgings, Fasteners",
                             Parent = 542
                         },
                         new
                         {
                             SectorId = 69,
+                            Level = 3,
                             Name = "Gas, Plasma, Laser cutting",
                             Parent = 542
                         },
                         new
                         {
                             SectorId = 66,
+                            Level = 3,
                             Name = "MIG, TIG, Aluminum welding",
                             Parent = 542
                         },
                         new
                         {
                             SectorId = 9,
+                            Level = 1,
                             Name = "Plastic and Rubber",
                             Parent = 1
                         },
                         new
                         {
                             SectorId = 54,
+                            Level = 2,
                             Name = "Packaging",
                             Parent = 9
                         },
                         new
                         {
                             SectorId = 556,
+                            Level = 2,
                             Name = "Plastic goods",
                             Parent = 9
                         },
                         new
                         {
                             SectorId = 559,
+                            Level = 2,
                             Name = "Plastic processing technology",
                             Parent = 9
                         },
                         new
                         {
                             SectorId = 55,
+                            Level = 3,
                             Name = "Blowing",
                             Parent = 559
                         },
                         new
                         {
                             SectorId = 57,
+                            Level = 3,
                             Name = "Moulding",
                             Parent = 559
                         },
                         new
                         {
                             SectorId = 53,
+                            Level = 3,
                             Name = "Plastics welding and processing",
                             Parent = 559
                         },
                         new
                         {
                             SectorId = 560,
+                            Level = 2,
                             Name = "Plastic profiles",
                             Parent = 9
                         },
                         new
                         {
                             SectorId = 5,
+                            Level = 1,
                             Name = "Printing",
                             Parent = 1
                         },
                         new
                         {
                             SectorId = 148,
+                            Level = 2,
                             Name = "Advertising",
                             Parent = 5
                         },
                         new
                         {
                             SectorId = 150,
+                            Level = 2,
                             Name = "Book/Periodicals printing",
                             Parent = 5
                         },
                         new
                         {
                             SectorId = 145,
+                            Level = 2,
                             Name = "Labelling and packaging printing",
                             Parent = 5
                         },
                         new
                         {
                             SectorId = 7,
+                            Level = 1,
                             Name = "Textile and Clothing",
                             Parent = 1
                         },
                         new
                         {
                             SectorId = 44,
+                            Level = 2,
                             Name = "Clothing",
                             Parent = 7
                         },
                         new
                         {
                             SectorId = 45,
+                            Level = 2,
                             Name = "Textile",
                             Parent = 7
                         },
                         new
                         {
                             SectorId = 8,
+                            Level = 1,
                             Name = "Wood",
                             Parent = 1
                         },
                         new
                         {
                             SectorId = 337,
+                            Level = 2,
                             Name = "Other (Wood)",
                             Parent = 8
                         },
                         new
                         {
                             SectorId = 51,
+                            Level = 2,
                             Name = "Wooden building materials",
                             Parent = 8
                         },
                         new
                         {
                             SectorId = 47,
+                            Level = 2,
                             Name = "Wooden houses",
                             Parent = 8
                         },
                         new
                         {
                             SectorId = 3,
+                            Level = 0,
                             Name = "Other",
                             Parent = 0
                         },
                         new
                         {
                             SectorId = 37,
+                            Level = 1,
                             Name = "Creative industries",
                             Parent = 3
                         },
                         new
                         {
                             SectorId = 29,
+                            Level = 1,
                             Name = "Energy technology",
                             Parent = 3
                         },
                         new
                         {
                             SectorId = 33,
+                            Level = 1,
                             Name = "Environment",
                             Parent = 3
                         },
                         new
                         {
                             SectorId = 2,
+                            Level = 0,
                             Name = "Service",
                             Parent = 0
                         },
                         new
                         {
                             SectorId = 25,
+                            Level = 1,
                             Name = "Business services",
                             Parent = 2
                         },
                         new
                         {
                             SectorId = 35,
+                            Level = 1,
                             Name = "Engineering",
                             Parent = 2
                         },
                         new
                         {
                             SectorId = 28,
+                            Level = 1,
                             Name = "Information Technology and Telecommunications",
                             Parent = 2
                         },
                         new
                         {
                             SectorId = 581,
+                            Level = 2,
                             Name = "Data processing, Web portals, E-marketing",
                             Parent = 28
                         },
                         new
                         {
                             SectorId = 576,
+                            Level = 2,
                             Name = "Programming, Consultancy",
                             Parent = 28
                         },
                         new
                         {
                             SectorId = 121,
+                            Level = 2,
                             Name = "Software, Hardware",
                             Parent = 28
                         },
                         new
                         {
                             SectorId = 122,
+                            Level = 2,
                             Name = "Telecommunications",
                             Parent = 28
                         },
                         new
                         {
                             SectorId = 22,
+                            Level = 1,
                             Name = "Tourism",
                             Parent = 2
                         },
                         new
                         {
                             SectorId = 141,
+                            Level = 1,
                             Name = "Translation services",
                             Parent = 2
                         },
                         new
                         {
                             SectorId = 21,
+                            Level = 1,
                             Name = "Transport and Logistics",
                             Parent = 2
                         },
                         new
                         {
                             SectorId = 111,
+                            Level = 2,
                             Name = "Air",
                             Parent = 21
                         },
                         new
                         {
                             SectorId = 114,
+                            Level = 2,
                             Name = "Rail",
                             Parent = 21
                         },
                         new
                         {
                             SectorId = 112,
+                            Level = 2,
                             Name = "Road",
                             Parent = 21
                         },
                         new
                         {
                             SectorId = 113,
+                            Level = 2,
                             Name = "Water",
                             Parent = 21
                         });

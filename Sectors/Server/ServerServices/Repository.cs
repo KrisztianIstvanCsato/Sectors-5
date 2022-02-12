@@ -54,7 +54,7 @@ namespace Sectors.Server.Services
             var Sectors = _dataContext.SectorsDb
                         .OrderBy(x => x.SectorId);
 
-            return _mapper.Map<List<SectorDto>>(Sectors);
+            return FindSectorListHierarchy(_mapper.Map<List<SectorDto>>(Sectors));
         }
 
         public async Task<User> GetUserByName(string userName)
@@ -120,6 +120,31 @@ namespace Sectors.Server.Services
             await Save();
 
             return UserDto;
+        }
+
+        private List<SectorDto> FindSectorListHierarchy(List<SectorDto> SectorDtos)
+        {
+            _logger.LogInformation("Finding hierarchy for sector dtos");
+
+            var OrderedList = new List<SectorDto> { new SectorDto() };
+            var index = 0;
+
+            while (OrderedList.Count < SectorDtos.Count)
+            {
+                var item = OrderedList[index];
+
+                var temporaryList = SectorDtos
+                    .Where(p => p.Parent.Equals(item.SectorId))
+                    .OrderBy(p => p.Name)
+                    .ToList();
+
+                if (temporaryList.Count > 0)
+                {
+                    OrderedList.InsertRange(index + 1, temporaryList);
+                }
+                index++;
+            }
+            return OrderedList.Where(s => s.SectorId != 0).ToList();
         }
     }
 }

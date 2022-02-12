@@ -3,9 +3,9 @@ using System.Text.RegularExpressions;
 
 namespace Sectors.Server.Data
 {
-    public static class SampleSectorSelector
+    public class SampleSectorSelector
     {
-        private static readonly string _sectorSampleString = @"
+        private readonly string _sectorSampleString = @"
     <option value=1>
       Manufacturing
     </option>
@@ -244,24 +244,24 @@ namespace Sectors.Server.Data
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Water
     </option>";
 
-        public static List<Sector> ProcessSample()
+        public List<Sector> ProcessSample()
         {
             var CleanSample = CleanSampleString(_sectorSampleString);
             var InitialList = CreateInitialList(CleanSample);
             var SectorList = CreateSectorList(InitialList);
-            SectorList = ExtractHierarchy(SectorList);
+            SectorList = FindSectorListHierarchy(SectorList);
 
             return SectorList;
         }
 
-        private static string CleanSampleString(string sample)
+        private string CleanSampleString(string sample)
         {
             sample = Regex.Replace(sample, @"\n|\r", "");
             return sample.Replace("<option value=", "")
                             .Replace(@"option>", "");
         }
 
-        private static List<string> CreateInitialList(string sample)
+        private List<string> CreateInitialList(string sample)
         {
             var InitialList = new List<string>();
             sample.Split("</").ToList().ForEach(s => InitialList.Add(s));
@@ -270,7 +270,7 @@ namespace Sectors.Server.Data
             return InitialList;
         }
 
-        private static List<Sector> CreateSectorList(List<string> InitialList)
+        private List<Sector> CreateSectorList(List<string> InitialList)
         {
             List<Sector> SectorList = new();
 
@@ -282,20 +282,20 @@ namespace Sectors.Server.Data
 
             foreach (var sector in SectorList)
             {
-                sector.Parent = (int)Math.Round(((sector.Name.Split("&nbsp;").Length - 1) / 4m));
+                sector.Level = (int)Math.Round(((sector.Name.Split("&nbsp;").Length - 1) / 4m));
                 sector.Name = sector.Name.Replace("&nbsp;", "").Trim();
             }
             return SectorList;
         }
 
-        private static List<Sector> ExtractHierarchy(List<Sector> SectorList)
+        private List<Sector> FindSectorListHierarchy(List<Sector> SectorList)
         {
             var PreviousLevel = 0; // Records closest relative position on the tree
             var SectorLevels = new List<int>();
 
             foreach (var sector in SectorList)
             {
-                var SampleLevel = sector.Parent;
+                var SampleLevel = sector.Level;
                 var Level = SampleLevel - PreviousLevel;
 
                 if (Level > 0)
@@ -333,7 +333,7 @@ namespace Sectors.Server.Data
             return SectorList;
         }
 
-        public static List<int> RepeatRemove(int repeatCount, List<int> SectorLevels)
+        public List<int> RepeatRemove(int repeatCount, List<int> SectorLevels)
         {
             // Remove the previous level sector
             SectorLevels.RemoveAt(SectorLevels.Count - 1);

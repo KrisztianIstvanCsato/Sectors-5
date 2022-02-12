@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using System.ComponentModel.DataAnnotations
+@using Sectors.Server.Data
 @using Sectors.Shared.Dtos;
 
 @inject IApiService ApiService
@@ -20,8 +21,8 @@
             <tr>
                 <td>
                     <div>
-                        <label>Name</label>
-                        <InputText name="name" @bind-Value="CurrentUser.Name"></InputText>
+                        <label for="Name">Name</label>
+                        <InputText id="Name" @bind-Value="CurrentUser.Name"></InputText>
                         <ValidationMessage For=@(() => CurrentUser.Name) />
                         <br>
                     </div>
@@ -59,9 +60,14 @@
             <SelectList Item="Sector" ItemId="Sector.SectorId"
                 @bind-SelectedItems="SelectedSectors" Context="sector">
                 <ItemTemplate>
-                    @sector.Name
+                    @for(var i = 0; i < (Sector.Level * 4); i++)
+                    {
+                        @:&nbsp;
+                    }
+                    @Sector.Name
                 </ItemTemplate>
             </SelectList>
+            <ValidationMessage For=@(() => CurrentUser.Agreed) />
         }
         <hr />
         <br>
@@ -81,7 +87,7 @@
     private List<SectorDto> SectorList;
     public EventCallback<List<SectorDto>> SelectedSectorsChanged { get; set; }
 
-    private string UserNameInput = string.Empty;
+    private string NameInput = string.Empty;
     private List<SectorDto> HiddenSectors;
     public UserDto CurrentUser { get; set; } = new();
     bool Loading = false;
@@ -109,13 +115,9 @@
 
             CurrentUser = await ApiService.GetUserByName(nameInput);
             CurrentUser.Name = nameInput;
-            UserNameInput = nameInput;
+            NameInput = nameInput;
 
-            if (!CurrentUser.UserId.Equals(0))
-            {
-                var SelectedSectorIds = CurrentUser.Sectors.Select(cs => cs.SectorId).ToList();
-                SelectedSectors = HiddenSectors.Where(hs => SelectedSectorIds.Contains(hs.SectorId)).ToList();
-            }
+            SelectedSectors = AddMarkedSectors(CurrentUser, HiddenSectors);
 
             Loading = false;
             SectorList = HiddenSectors;
@@ -127,7 +129,7 @@
         if (CurrentUser.Name != null && CurrentUser.Name.Trim().Length > 0)
         {
             var IsNameAllowed = true;
-            if (!UserNameInput.Equals(CurrentUser.Name))
+            if (!NameInput.Equals(CurrentUser.Name))
             {
                 IsNameAllowed = await ApiService.FindNameInUse(CurrentUser.Name);
             }
@@ -135,9 +137,19 @@
             if (IsNameAllowed)
             {
                 ShowTitle = false;
-                CurrentUser = await ApiService.UserOperation(UserNameInput, CurrentUser, SelectedSectors);
+                CurrentUser = await ApiService.UserOperation(NameInput, CurrentUser, SelectedSectors);
                 ShowTitle = true;
             }
         }
+    }
+
+    private List<SectorDto> AddMarkedSectors(UserDto userDto, List<SectorDto> sectorDto)
+    {
+        if (!userDto.UserId.Equals(0))
+        {
+            var SelectedSectorIds = userDto.Sectors.Select(cs => cs.SectorId).ToList();
+            return sectorDto.Where(hs => SelectedSectorIds.Contains(hs.SectorId)).ToList();
+        }
+        return new List<SectorDto>();
     }
 }
