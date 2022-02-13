@@ -31,27 +31,27 @@ namespace Sectors.Client.Services
 
         public async Task<UserDto> UserOperation(string OriginalNameInput, UserDto CurrentUser, List<SectorDto> SelectedSectors)
         {
+            var UserDto = CreateCurrentUserSectorDtoSelection(CurrentUser, SelectedSectors);
+
             if (CurrentUser.UserId.Equals(0))
             {
-                return await CreateUser(CurrentUser, SelectedSectors);
+                return await CreateUser(UserDto);
             }
             else
             {
-                return await UpdateUser(OriginalNameInput, CurrentUser, SelectedSectors);
+                return await UpdateUser(OriginalNameInput, UserDto);
             }
         }
 
-        public async Task<UserDto> CreateUser(UserDto UserDto, List<SectorDto> selectedSectors)
+        public async Task<UserDto> CreateUser(UserDto UserDto)
         {
-            UserDto = CreateCurrentUserSectorDtoSelection(UserDto, selectedSectors);
             var response = await _httpClient.PostAsJsonAsync("/api/sector", UserDto);
             return await response.Content.ReadFromJsonAsync<UserDto>();
         }
 
-        public async Task<UserDto> UpdateUser(string NameInput, UserDto UserDto, List<SectorDto> selectedSectors)
+        public async Task<UserDto> UpdateUser(string NameInput, UserDto UserDto)
         {
-            var user = CreateCurrentUserSectorDtoSelection(UserDto, selectedSectors);
-            var response = await _httpClient.PutAsJsonAsync($"/api/sector/{NameInput}", user);
+            var response = await _httpClient.PutAsJsonAsync($"/api/sector/{NameInput}", UserDto);
             return await response.Content.ReadFromJsonAsync<UserDto>();
         }
 

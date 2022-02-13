@@ -123,6 +123,7 @@
             {
                 ShowTitle = false;
                 CurrentUser = await ApiService.UserOperation(NameInput, CurrentUser, SelectedSectors);
+                NameInput = CurrentUser.Name;
                 ShowTitle = true;
             }
         }
