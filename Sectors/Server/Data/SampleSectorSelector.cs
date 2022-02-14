@@ -277,7 +277,7 @@ namespace Sectors.Server.Data
             foreach (string sectorString in initialList)
             {
                 var split = sectorString.Split(">");
-                sectorList.Add(new Sector { SectorId = Int32.Parse(split[0].Trim()), Name = split[1].Trim() });
+                sectorList.Add(new Sector { SectorId = int.Parse(split[0].Trim()), Name = split[1].Trim() });
             }
 
             foreach (var sector in sectorList)

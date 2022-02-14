@@ -1,5 +1,4 @@
-﻿using Sectors.Shared;
-using Sectors.Shared.Dtos;
+﻿using Sectors.Shared.Dtos;
 
 namespace Sectors.Server.Services
 {

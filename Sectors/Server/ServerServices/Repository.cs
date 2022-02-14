@@ -103,13 +103,13 @@ namespace Sectors.Server.Services
                 }
                 Update(userById);
                 await Save();
-            
+
                 var dbSectorIds = _dataContext.UserSector
                                     .Where(us => us.UserId == userById.UserId)
                                     .Select(si => si.SectorId)
                                     .ToList();
 
-                if(!dbSectorIds.SequenceEqual(userDto.SectorIds))
+                if (!dbSectorIds.SequenceEqual(userDto.SectorIds))
                 {
                     var idsToDelete = dbSectorIds
                                     .Except(userDto.SectorIds)

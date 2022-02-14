@@ -1,10 +1,6 @@
-using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.EntityFrameworkCore;
 using Sectors.Server.Data;
-using Sectors.Server.Services;
-using AutoMapper;
-using System.Reflection;
 using Sectors.Server.Interfaces;
+using Sectors.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Sectors.Shared;
 using Sectors.Shared.Dtos;
-using Sectors.Shared.Models;
 
 namespace Sectors.Server.Profiles
 {

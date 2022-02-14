@@ -7,13 +7,13 @@ namespace Sectors.Server.Services
 {
     public class Seeder : ISeeder
     {
-        private List<User> _userDtos = new List<User>
+        private readonly List<User> _userDtos = new List<User>
         {
             new User { UserId = 1, Name = "TestPerson1"},
             new User { UserId = 2, Name = "TestPerson2"}
         };
 
-        private List<UserSector> _userSectors = new List<UserSector>
+        private readonly List<UserSector> _userSectors = new List<UserSector>
         {
             new UserSector{ UserId = 1, SectorId = 576 },
             new UserSector{ UserId = 1, SectorId = 25 },
