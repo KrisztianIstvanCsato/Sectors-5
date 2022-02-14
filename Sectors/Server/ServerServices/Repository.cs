@@ -1,12 +1,8 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 using Sectors.Server.Data;
 using Sectors.Shared;
 using Sectors.Shared.Dtos;
-using System.Net.Http.Json;
-using Sectors.Server.Interfaces;
 using Sectors.Shared.Models;
-using System.Linq;
 
 namespace Sectors.Server.Services
 {
@@ -47,104 +43,125 @@ namespace Sectors.Server.Services
             return (await _dataContext.SaveChangesAsync()) >= 0;
         }
 
-        public async Task<List<SectorDto>> GetSectorDtos()
+        public List<SectorDto> GetSectorDtos()
         {
             _logger.LogInformation("Getting sector dtos");
 
-            var Sectors = _dataContext.SectorsDb
+            var sectors = _dataContext.Sector
                         .OrderBy(x => x.SectorId);
 
-            return FindSectorListHierarchy(_mapper.Map<List<SectorDto>>(Sectors));
+            return OrganizeSectorListHierarchy(_mapper.Map<List<SectorDto>>(sectors));
         }
 
-        public async Task<User> GetUserByName(string userName)
-        {
-            _logger.LogInformation($"Getting user by name {userName}");
-
-            var User = _dataContext.UsersDb
-                                .Where(u => u.Name == userName)
-                                .FirstOrDefault();
-            if (User == null)
-                return new User();
-
-            User.Sectors = GetUserSectorsByUserId(User.UserId);
-
-            return User;
-        }
-
-        public async Task<UserDto> GetUserDtoByName(string userName)
+        public UserDto GetUserDtoByName(string userName)
         {
             _logger.LogInformation($"Getting user dto by name {userName}");
 
-            return _mapper.Map<UserDto>(await GetUserByName(userName));
+            var user = _dataContext.User
+                                .Where(u => u.Name == userName)
+                                .FirstOrDefault();
+            if (user == null)
+            {
+                return new UserDto { Name = userName };
+            }
+
+            var userDto = _mapper.Map<UserDto>(user);
+
+            userDto.SectorIds = GetUserSectorsByUserId(user.UserId);
+
+            return userDto;
         }
 
-        public List<UserSector> GetUserSectorsByUserId(int userId)
+        public List<int> GetUserSectorsByUserId(int userId)
         {
             _logger.LogInformation($"Getting UserSector list by user id {userId}");
 
-            return _dataContext.UserSectorsDb
+            return _dataContext.UserSector
                                 .Where(us => us.UserId == userId)
+                                .Select(us => us.SectorId)
                                 .ToList();
         }
 
-        public async Task<UserDto> CreateUser(UserDto UserDto)
+        public async Task<UserDto> SaveUser(UserDto userDto)
         {
-            _logger.LogInformation($"Creating user in service: {UserDto.Name}");
+            _logger.LogInformation($"Updating user in service: {userDto.Name}");
 
-            var User = _mapper.Map<User>(UserDto);
+            var userById = _dataContext.User.FirstOrDefault(u => u.UserId == userDto.UserId);
+            var userByName = _dataContext.User.FirstOrDefault(u => u.Name == userDto.Name);
 
-            Add(User);
+            if (userById == null)
+            {
+                userById = new User { Name = userDto.Name };
+                Add(userById);
+                await Save();
+            }
+            else
+            {
+                if (userByName == null)
+                {
+                    userById.Name = userDto.Name;
+                }
+                Update(userById);
+                await Save();
+            
+                var dbSectorIds = _dataContext.UserSector
+                                    .Where(us => us.UserId == userById.UserId)
+                                    .Select(si => si.SectorId)
+                                    .ToList();
 
-            await Save();
+                if(!dbSectorIds.SequenceEqual(userDto.SectorIds))
+                {
+                    var idsToDelete = dbSectorIds
+                                    .Except(userDto.SectorIds)
+                                    .ToList();
 
-            return _mapper.Map<UserDto>(User);
+                    var idsToAdd = userDto.SectorIds
+                                            .Except(dbSectorIds)
+                                            .ToList();
+
+                    var userSectorToDelete = _dataContext.UserSector
+                                                .Where(q => idsToDelete.Contains(q.SectorId))
+                                                .ToList();
+
+                    _dataContext.UserSector.RemoveRange(userSectorToDelete);
+
+                    _dataContext.UserSector.AddRange(
+                            idsToAdd.Select(us => new UserSector
+                            {
+                                UserId = userById.UserId,
+                                SectorId = us
+                            }));
+
+                    await Save();
+                }
+            }
+
+            return userDto;
         }
 
-        public async Task<UserDto> UpdateUser(string InputName, UserDto UserDto)
-        {
-            _logger.LogInformation($"Updating user in service: {UserDto.Name}");
-
-            var ModifiedUser = _mapper.Map<User>(UserDto);
-
-            var DbUserInUse = _dataContext.Find<User>((await GetUserByName(InputName)).UserId);
-            _dataContext.Entry(DbUserInUse).State = EntityState.Modified;
-
-            _dataContext.RemoveRange(DbUserInUse.Sectors.Except(ModifiedUser.Sectors));
-
-            DbUserInUse.Name = ModifiedUser.Name;
-            DbUserInUse.Sectors = ModifiedUser.Sectors;
-
-            Update(DbUserInUse);
-
-            await Save();
-
-            return UserDto;
-        }
-
-        private List<SectorDto> FindSectorListHierarchy(List<SectorDto> SectorDtos)
+        private List<SectorDto> OrganizeSectorListHierarchy(List<SectorDto> sectorDtos)
         {
             _logger.LogInformation("Finding hierarchy for sector dtos");
 
-            var OrderedList = new List<SectorDto> { new SectorDto() };
+            var orderedList = new List<SectorDto> { new SectorDto() }; // Seeding object with defult SectorId == 0
             var index = 0;
 
-            while (OrderedList.Count < SectorDtos.Count)
+            while (orderedList.Count < sectorDtos.Count)
             {
-                var item = OrderedList[index];
+                var item = orderedList[index];
 
-                var temporaryList = SectorDtos
+                var temporaryList = sectorDtos
                     .Where(p => p.Parent.Equals(item.SectorId))
                     .OrderBy(p => p.Name)
                     .ToList();
 
                 if (temporaryList.Count > 0)
                 {
-                    OrderedList.InsertRange(index + 1, temporaryList);
+                    orderedList.InsertRange(index + 1, temporaryList);
                 }
                 index++;
             }
-            return OrderedList.Where(s => s.SectorId != 0).ToList();
+            return orderedList.Where(s => s.SectorId != 0).ToList();
         }
     }
 }

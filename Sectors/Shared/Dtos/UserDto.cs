@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Sectors.Server.Utilities;
 
 namespace Sectors.Shared.Dtos
 {
@@ -12,7 +13,7 @@ namespace Sectors.Shared.Dtos
     {
         public UserDto()
         {
-            Sectors = new List<UserSectorDto>();
+            SectorIds = new List<int>();
         }
 
         [Key]
@@ -27,7 +28,9 @@ namespace Sectors.Shared.Dtos
         [Range(typeof(bool), "true", "true",
         ErrorMessage = "Your agreement is required!")]
         public bool Agreed { get; set; }
+
         [Required]
-        public virtual List<UserSectorDto> Sectors { get; set; }
+        [MinLength(1, ErrorMessage = "You should provide at least one sector!")]
+        public List<int> SectorIds { get; set; }
     }
 }

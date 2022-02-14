@@ -5,13 +5,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sectors.Shared.Dtos
+namespace Sectors.Shared.Models
 {
-    public class UserSectorDto
+    public class UserSector
     {
         [Key]
         public int UserId { get; set; }
+        public User? User { get; set; }
+
         [Key]
         public int SectorId { get; set; }
+        public Sector? Sector { get; set; }
     }
 }

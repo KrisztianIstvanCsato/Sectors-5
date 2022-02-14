@@ -5,7 +5,7 @@ namespace Sectors.Server.Data
 {
     public class SampleSectorSelector
     {
-        private readonly string _sectorSampleString = @"
+        private readonly string sectorSampleString = @"
     <option value=1>
       Manufacturing
     </option>
@@ -246,12 +246,12 @@ namespace Sectors.Server.Data
 
         public List<Sector> ProcessSample()
         {
-            var CleanSample = CleanSampleString(_sectorSampleString);
-            var InitialList = CreateInitialList(CleanSample);
-            var SectorList = CreateSectorList(InitialList);
-            SectorList = FindSectorListHierarchy(SectorList);
+            var cleanSample = CleanSampleString(sectorSampleString);
+            var initialList = CreateInitialList(cleanSample);
+            var sectorList = CreateSectorList(initialList);
+            sectorList = FindSectorListHierarchy(sectorList);
 
-            return SectorList;
+            return sectorList;
         }
 
         private string CleanSampleString(string sample)
@@ -263,88 +263,88 @@ namespace Sectors.Server.Data
 
         private List<string> CreateInitialList(string sample)
         {
-            var InitialList = new List<string>();
-            sample.Split("</").ToList().ForEach(s => InitialList.Add(s));
-            InitialList.RemoveAt(InitialList.Count - 1);
+            var initialList = new List<string>();
+            sample.Split("</").ToList().ForEach(s => initialList.Add(s));
+            initialList.RemoveAt(initialList.Count - 1);
 
-            return InitialList;
+            return initialList;
         }
 
-        private List<Sector> CreateSectorList(List<string> InitialList)
+        private List<Sector> CreateSectorList(List<string> initialList)
         {
-            List<Sector> SectorList = new();
+            List<Sector> sectorList = new();
 
-            foreach (string sectorString in InitialList)
+            foreach (string sectorString in initialList)
             {
                 var split = sectorString.Split(">");
-                SectorList.Add(new Sector { SectorId = Int32.Parse(split[0].Trim()), Name = split[1].Trim() });
+                sectorList.Add(new Sector { SectorId = Int32.Parse(split[0].Trim()), Name = split[1].Trim() });
             }
 
-            foreach (var sector in SectorList)
+            foreach (var sector in sectorList)
             {
                 sector.Level = (int)Math.Round(((sector.Name.Split("&nbsp;").Length - 1) / 4m));
                 sector.Name = sector.Name.Replace("&nbsp;", "").Trim();
             }
-            return SectorList;
+            return sectorList;
         }
 
-        private List<Sector> FindSectorListHierarchy(List<Sector> SectorList)
+        private List<Sector> FindSectorListHierarchy(List<Sector> sectorList)
         {
-            var PreviousLevel = 0; // Records closest relative position on the tree
-            var SectorLevels = new List<int>();
+            var previousLevel = 0; // Records closest relative position on the tree
+            var sectorLevels = new List<int>();
 
-            foreach (var sector in SectorList)
+            foreach (var sector in sectorList)
             {
                 var SampleLevel = sector.Level;
-                var Level = SampleLevel - PreviousLevel;
+                var Level = SampleLevel - previousLevel;
 
                 if (Level > 0)
                 {
-                    sector.Parent = SectorLevels.Last();
-                    SectorLevels.Add(sector.SectorId);
+                    sector.Parent = sectorLevels.Last();
+                    sectorLevels.Add(sector.SectorId);
                 }
                 else if (Level < 0)
                 {
-                    SectorLevels = RepeatRemove(Level, SectorLevels);
+                    sectorLevels = RepeatRemove(Level, sectorLevels);
 
-                    if (!SectorLevels.Count.Equals(0)) // Otherwise root sector (Parent = 0)
+                    if (!sectorLevels.Count.Equals(0)) // Otherwise root sector (Parent = 0)
                     {
-                        sector.Parent = SectorLevels.Last();
+                        sector.Parent = sectorLevels.Last();
                     }
 
-                    SectorLevels.Add(sector.SectorId);
+                    sectorLevels.Add(sector.SectorId);
                 }
                 else
                 {
-                    if (SectorLevels.Count > 0) // Otherwise root sector
+                    if (sectorLevels.Count > 0) // Otherwise root sector
                     {
-                        SectorLevels.RemoveAt(SectorLevels.Count - 1);
+                        sectorLevels.RemoveAt(sectorLevels.Count - 1);
                     }
 
-                    if (SectorLevels.Count > 0) //Otherwise root sector
+                    if (sectorLevels.Count > 0) //Otherwise root sector
                     {
-                        sector.Parent = SectorLevels.Last();
+                        sector.Parent = sectorLevels.Last();
                     }
 
-                    SectorLevels.Add(sector.SectorId);
+                    sectorLevels.Add(sector.SectorId);
                 }
-                PreviousLevel = SampleLevel;
+                previousLevel = SampleLevel;
             }
-            return SectorList;
+            return sectorList;
         }
 
-        public List<int> RepeatRemove(int repeatCount, List<int> SectorLevels)
+        public List<int> RepeatRemove(int repeatCount, List<int> sectorLevels)
         {
             // Remove the previous level sector
-            SectorLevels.RemoveAt(SectorLevels.Count - 1);
+            sectorLevels.RemoveAt(sectorLevels.Count - 1);
 
             // Remove every other Levels, if neccesary
             for (var j = 0; j < Math.Abs(repeatCount); j++)
             {
-                SectorLevels.RemoveAt(SectorLevels.Count - 1);
+                sectorLevels.RemoveAt(sectorLevels.Count - 1);
             }
 
-            return SectorLevels;
+            return sectorLevels;
         }
     }
 }

@@ -11,7 +11,6 @@ namespace Sectors.Server.Profiles
         {
             CreateMap<Sector, SectorDto>();
             CreateMap<User, UserDto>().ReverseMap();
-            CreateMap<UserSector, UserSectorDto>().ReverseMap();
         }
     }
 }

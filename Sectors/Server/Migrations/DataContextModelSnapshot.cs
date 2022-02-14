@@ -33,7 +33,7 @@ namespace Sectors.Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserSectorsDb");
+                    b.ToTable("UserSector");
 
                     b.HasData(
                         new
@@ -78,7 +78,7 @@ namespace Sectors.Server.Migrations
 
                     b.HasKey("SectorId");
 
-                    b.ToTable("SectorsDb");
+                    b.ToTable("Sector");
 
                     b.HasData(
                         new
@@ -644,28 +644,23 @@ namespace Sectors.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"), 1L, 1);
 
-                    b.Property<bool>("Agreed")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId");
 
-                    b.ToTable("UsersDb");
+                    b.ToTable("User");
 
                     b.HasData(
                         new
                         {
                             UserId = 1,
-                            Agreed = true,
                             Name = "TestPerson1"
                         },
                         new
                         {
                             UserId = 2,
-                            Agreed = true,
                             Name = "TestPerson2"
                         });
                 });

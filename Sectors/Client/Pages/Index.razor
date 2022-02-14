@@ -1,6 +1,6 @@
 ﻿@page "/"
 @using System.ComponentModel.DataAnnotations
-@using Sectors.Server.Data
+@using Sectors.Server.Utilities
 @using Sectors.Shared.Dtos;
 
 @inject IApiService ApiService
@@ -37,7 +37,7 @@
 
     <br>
 
-    @if (SectorList == null)
+    @if (VisibleSector.Count.Equals(0))
     {
         @if (Loading)
         {
@@ -46,7 +46,7 @@
     }
     else
     {
-        @if (CurrentUser.UserId.Equals(0) && ShowTitle)
+        @if (CurrentUser.UserId.Equals(0))
         {
             <CreateUserTitle></CreateUserTitle>
         }
@@ -55,10 +55,30 @@
             <EditUserTitle></EditUserTitle>
         }
 
-        <DropdownComponent InputList="SectorList" SelectedList="SelectedSectors" User="CurrentUser"></DropdownComponent>
-        
-        <AgreementComponent User="CurrentUser"></AgreementComponent>
-        
+        <br>
+
+        <div class=modal-dialog-scrollable>
+            @foreach (var Sector in HiddenSectors)
+            {
+                <SelectList Item="Sector" ItemId="Sector.SectorId"
+                    @bind-SelectedItems="SelectedSectors" Context="sector">
+                    <ItemTemplate>
+                        @for (var i = 0; i < (Sector.Level * 4); i++)
+                        {
+                    @:&nbsp;
+                        }
+                @Sector.Name
+            </ItemTemplate>
+        </SelectList>
+            }
+        </div>
+        <ValidationMessage For=@(() => CurrentUser.SectorIds) />
+        <hr />
+        <br>
+
+        <AgreementComponent User="CurrentUser">
+        </AgreementComponent>
+
         <br>
         <ValidationSummary />
         <br>
@@ -69,14 +89,14 @@
 </EditForm>
 
 @code {
-    public List<SectorDto> SelectedSectors { get; set; }
-    private List<SectorDto> SectorList;
+    public List<SectorDto> SelectedSectors { get; set; } = new();
+    private List<SectorDto> VisibleSector { get; set; } = new();
     public UserDto CurrentUser { get; set; } = new();
+    public EventCallback<List<SectorDto>> SelectedSectorsChanged { get; set; }
 
     private string NameInput = string.Empty;
-    private List<SectorDto> HiddenSectors;
+    private List<SectorDto> HiddenSectors { get; set; } = new();
     bool Loading = false;
-    bool ShowTitle = true;
 
     protected override async void OnInitialized()
     {
@@ -85,7 +105,7 @@
 
     private void ClearForm()
     {
-        SectorList = null;
+        VisibleSector = new();
         SelectedSectors = new();
         CurrentUser = new();
     }
@@ -94,48 +114,40 @@
     {
         ClearForm();
 
-        if (nameInput != null && nameInput.Trim().Length > 0)
+        if (!string.IsNullOrWhiteSpace(nameInput))
         {
             Loading = true;
 
             CurrentUser = await ApiService.GetUserByName(nameInput);
-            CurrentUser.Name = nameInput;
-            NameInput = nameInput;
+            NameInput = CurrentUser.Name;
 
-            SelectedSectors = SelectingSectors(CurrentUser, HiddenSectors);
+            SelectedSectors = SelectingSectors(CurrentUser.SectorIds, HiddenSectors);
 
             Loading = false;
-            SectorList = HiddenSectors;
+            VisibleSector = HiddenSectors;
         }
     }
 
     async void HandleSubmit()
     {
-        if (CurrentUser.Name != null && CurrentUser.Name.Trim().Length > 0)
-        {
-            var IsNameAllowed = true;
-            if (!NameInput.Equals(CurrentUser.Name))
-            {
-                IsNameAllowed = await ApiService.FindNameInUse(CurrentUser.Name);
-            }
+        CurrentUser.SectorIds = SelectedSectors
+                                .Select(ss => ss.SectorId)
+                                .ToList();
 
-            if (IsNameAllowed)
-            {
-                ShowTitle = false;
-                CurrentUser = await ApiService.UserOperation(NameInput, CurrentUser, SelectedSectors);
-                NameInput = CurrentUser.Name;
-                ShowTitle = true;
-            }
+        var IsNameAllowed = true;
+        if (NameInput != CurrentUser.Name)
+        {
+            IsNameAllowed = (await ApiService.GetUserByName(CurrentUser.Name)).UserId.Equals(0);
+        }
+
+        if (IsNameAllowed && !CurrentUser.SectorIds.Count.Equals(0))
+        {
+            CurrentUser = await ApiService.SaveUser(CurrentUser);
         }
     }
 
-    private List<SectorDto> SelectingSectors(UserDto userDto, List<SectorDto> sectorDto)
+    private List<SectorDto> SelectingSectors(List<int> ids, List<SectorDto> sectorDto)
     {
-        if (!userDto.UserId.Equals(0))
-        {
-            var SelectedSectorIds = userDto.Sectors.Select(cs => cs.SectorId).ToList();
-            return sectorDto.Where(hs => SelectedSectorIds.Contains(hs.SectorId)).ToList();
-        }
-        return new List<SectorDto>();
+        return sectorDto.Where(hs => ids.Contains(hs.SectorId)).ToList();
     }
 }

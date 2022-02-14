@@ -19,9 +19,6 @@ namespace Sectors.Shared
         [Key]
         public int UserId { get; set; }
         public string Name { get; set; }
-        
-        public bool Agreed { get; set; }
-
         public virtual List<UserSector> Sectors { get; set; }
     }
 }

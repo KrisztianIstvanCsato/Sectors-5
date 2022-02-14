@@ -7,11 +7,6 @@ namespace Sectors.Client.Services
     {
         Task<List<SectorDto>> GetSectors();
         Task<UserDto> GetUserByName(string name);
-        Task<int[]> GetSectorIdCollectionByUserName(string userName);
-        Task<UserDto> UserOperation(string OriginalNameInput, UserDto CurrentUser, List<SectorDto> SelectedSectors);
-        Task<UserDto> CreateUser(UserDto userDto);
-        Task<UserDto> UpdateUser(string originalNameInput, UserDto UserDto);
-        UserDto CreateCurrentUserSectorDtoSelection(UserDto UserDto, List<SectorDto> CurrentSectorSelection);
-        Task<bool> FindNameInUse(string UserName);
+        Task<UserDto> SaveUser(UserDto UserDto);
     }
 }

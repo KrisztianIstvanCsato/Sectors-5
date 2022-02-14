@@ -45,8 +45,8 @@ namespace Sectors.Server.Data
                 .HasData(_seeder.GetUserSectorSamples());
         }
 
-        public DbSet<User> UsersDb { get; set; }
-        public DbSet<Sector> SectorsDb { get; set; }
-        public DbSet<UserSector> UserSectorsDb { get; set; }
+        public DbSet<User> User { get; set; }
+        public DbSet<Sector> Sector { get; set; }
+        public DbSet<UserSector> UserSector { get; set; }
     }
 }
