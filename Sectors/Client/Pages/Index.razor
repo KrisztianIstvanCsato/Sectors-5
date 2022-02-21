@@ -94,7 +94,7 @@
     public UserDto CurrentUser { get; set; } = new();
     public EventCallback<List<SectorDto>> SelectedSectorsChanged { get; set; }
 
-    private string NameInput = string.Empty;
+    private string InitialNameInput = string.Empty;
     private List<SectorDto> HiddenSectors { get; set; } = new();
     bool Loading = false;
 
@@ -119,7 +119,7 @@
             Loading = true;
 
             CurrentUser = await ApiService.GetUserByName(nameInput);
-            NameInput = CurrentUser.Name;
+            InitialNameInput = CurrentUser.Name;
 
             SelectedSectors = SelectingSectors(CurrentUser.SectorIds, HiddenSectors);
 
@@ -135,7 +135,7 @@
                                 .ToList();
 
         var IsNameAllowed = true;
-        if (NameInput != CurrentUser.Name)
+        if (InitialNameInput != CurrentUser.Name)
         {
             IsNameAllowed = (await ApiService.GetUserByName(CurrentUser.Name)).UserId.Equals(0);
         }

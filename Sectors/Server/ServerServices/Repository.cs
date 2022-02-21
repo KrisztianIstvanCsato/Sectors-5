@@ -89,7 +89,7 @@ namespace Sectors.Server.Services
             var userById = _dataContext.User.FirstOrDefault(u => u.UserId == userDto.UserId);
             var userByName = _dataContext.User.FirstOrDefault(u => u.Name == userDto.Name);
 
-            if (userByName == null && userById == null)
+            if (userById == null)
             {
                 userById = new User { Name = userDto.Name };
                 Add(userById);
@@ -105,19 +105,19 @@ namespace Sectors.Server.Services
                 await Save();
             }
 
-                var dbSectorIds = _dataContext.UserSector
+                var dbUserSectorIds = _dataContext.UserSector
                                     .Where(us => us.UserId == userById.UserId)
                                     .Select(si => si.SectorId)
                                     .ToList();
 
-            if (!dbSectorIds.SequenceEqual(userDto.SectorIds))
+            if (!dbUserSectorIds.SequenceEqual(userDto.SectorIds))
             {
-                var idsToDelete = dbSectorIds
+                var idsToDelete = dbUserSectorIds
                                 .Except(userDto.SectorIds)
                                 .ToList();
 
                 var idsToAdd = userDto.SectorIds
-                                        .Except(dbSectorIds)
+                                        .Except(dbUserSectorIds)
                                         .ToList();
 
                 var userSectorToDelete = _dataContext.UserSector
