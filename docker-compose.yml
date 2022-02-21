@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  sectors.server:
+    image: ${DOCKER_REGISTRY-}sectorsserver
+    build:
+      context: .
+      dockerfile: Sectors/Server/Dockerfile
