@@ -89,7 +89,7 @@ namespace Sectors.Server.Services
             var userById = _dataContext.User.FirstOrDefault(u => u.UserId == userDto.UserId);
             var userByName = _dataContext.User.FirstOrDefault(u => u.Name == userDto.Name);
 
-            if (userById == null)
+            if (userByName == null && userById == null)
             {
                 userById = new User { Name = userDto.Name };
                 Add(userById);
@@ -103,37 +103,37 @@ namespace Sectors.Server.Services
                 }
                 Update(userById);
                 await Save();
+            }
 
                 var dbSectorIds = _dataContext.UserSector
                                     .Where(us => us.UserId == userById.UserId)
                                     .Select(si => si.SectorId)
                                     .ToList();
 
-                if (!dbSectorIds.SequenceEqual(userDto.SectorIds))
-                {
-                    var idsToDelete = dbSectorIds
-                                    .Except(userDto.SectorIds)
-                                    .ToList();
+            if (!dbSectorIds.SequenceEqual(userDto.SectorIds))
+            {
+                var idsToDelete = dbSectorIds
+                                .Except(userDto.SectorIds)
+                                .ToList();
 
-                    var idsToAdd = userDto.SectorIds
-                                            .Except(dbSectorIds)
+                var idsToAdd = userDto.SectorIds
+                                        .Except(dbSectorIds)
+                                        .ToList();
+
+                var userSectorToDelete = _dataContext.UserSector
+                                            .Where(q => idsToDelete.Contains(q.SectorId))
                                             .ToList();
 
-                    var userSectorToDelete = _dataContext.UserSector
-                                                .Where(q => idsToDelete.Contains(q.SectorId))
-                                                .ToList();
+                _dataContext.UserSector.RemoveRange(userSectorToDelete);
 
-                    _dataContext.UserSector.RemoveRange(userSectorToDelete);
+                _dataContext.UserSector.AddRange(
+                        idsToAdd.Select(us => new UserSector
+                        {
+                            UserId = userById.UserId,
+                            SectorId = us
+                        }));
 
-                    _dataContext.UserSector.AddRange(
-                            idsToAdd.Select(us => new UserSector
-                            {
-                                UserId = userById.UserId,
-                                SectorId = us
-                            }));
-
-                    await Save();
-                }
+                await Save();
             }
 
             return userDto;
