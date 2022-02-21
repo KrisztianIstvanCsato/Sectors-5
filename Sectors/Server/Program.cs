@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Sectors.Server.Data;
 using Sectors.Server.Interfaces;
 using Sectors.Server.Services;
@@ -14,6 +15,12 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<ISeeder, Seeder>();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetService<DataContext>();
+    db.Database.EnsureCreated();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
